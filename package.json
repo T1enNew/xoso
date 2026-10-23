@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "node server.js --dev",
     "build": "vite build",
-    "start": "node server.js"
+    "start": "node server.js",
+    "test": "node --test test/kqxs.test.js"
   },
   "dependencies": {
     "react": "^19.3.1",

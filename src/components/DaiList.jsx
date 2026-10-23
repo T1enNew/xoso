@@ -14,11 +14,12 @@ export default function DaiList({ provinces, skip, onToggle, getCode, onCode }) 
               <input type="checkbox" checked={!off} onChange={e => onToggle(p.name, e.target.checked)} />
               {p.name}
             </label>
-            <input className="code" placeholder="Mã vé" value={getCode(p.name)}
-              onChange={e => onCode(p.name, e.target.value)} />
+            <input className="code" placeholder="VD 35TV40" maxLength={8} value={getCode(p.name)}
+              onChange={e => onCode(p.name, e.target.value.toUpperCase().replace(/[^0-9A-Z]/g, ''))} />
           </div>
         );
       })}
+      <p className="hint">Mã vé in dưới tên đài. Tuần sau tự tăng số cuối (40 → 41), sai thì sửa lại.</p>
     </div>
   );
 }

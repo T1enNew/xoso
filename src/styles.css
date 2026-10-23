@@ -36,7 +36,9 @@ button, input { font: inherit; color: inherit; }
 .dai label { flex: 1; display: flex; align-items: center; gap: 8px; cursor: pointer; font-weight: 500; min-width: 0; }
 .dai input[type=checkbox] { width: 16px; height: 16px; accent-color: var(--red); flex: none; }
 .dai .code { width: 96px; border: 1px solid var(--line); border-radius: 7px; padding: 5px 8px; font-weight: 700; font-size: 13.5px; text-transform: uppercase; letter-spacing: .03em; }
-.dai .code::placeholder { font-weight: 400; text-transform: none; letter-spacing: 0; }
+.dai .code::placeholder { font-weight: 400; text-transform: none; letter-spacing: 0; color: #b3aca4; }
+.dai .code:focus { outline: 2px solid var(--red); outline-offset: -1px; border-color: transparent; }
+.dai-list .hint { margin: 2px 0 0; font-size: 12.5px; }
 .dai.off label { color: var(--muted); text-decoration: line-through; }
 .dai.off .code { visibility: hidden; }
 .hint { color: var(--muted); font-size: 13px; margin-bottom: 14px; }
@@ -87,12 +89,13 @@ body.phieu .sheet { height: 296mm; min-height: 0; padding: 4mm; display: grid; g
 .slip table { width: 100%; height: 100%; border-collapse: collapse; table-layout: fixed; border: 0.45mm solid #000; font-family: Arial, Helvetica, sans-serif; font-size: var(--fs); color: #000; }
 .slip th, .slip td { border-left: 0.3mm solid #000; padding: 0 0.5mm; line-height: 1.15; font-weight: normal; text-align: center; white-space: nowrap; overflow: hidden; }
 .slip th.lb, .slip td.lb, .slip td.sub, .slip td.ft { border-left: 0; }
-.slip tr.hd th { border-bottom: 0.3mm solid #000; padding: 0.8mm 0.5mm; vertical-align: middle; }
+.slip tr.hd th { border-bottom: 0.3mm solid #000; padding: 0.8mm 0.5mm 0.6mm; vertical-align: bottom; }
+.slip tr.hd th.lb { vertical-align: middle; }
 .slip tr.top td { border-top: 0.3mm solid #000; }
 .slip th.lb { font-size: 6.5pt; line-height: 1.25; }
 .slip td.lb { font-size: 7pt; vertical-align: top; padding-top: 0.6mm; }
 .slip .pn { font-size: 7.5pt; text-transform: uppercase; white-space: normal; line-height: 1.1; }
-.slip .code { font-size: calc(var(--fs) * 1.15); line-height: 1.1; }
+.slip .code { font-size: var(--fcode); line-height: 1.1; margin-top: 0.5mm; letter-spacing: 0; }
 .slip tr.g8 td.v { font-size: var(--f8); font-weight: bold; }
 .slip tr.db td.v { font-size: var(--fdb); font-weight: bold; }
 .slip tr.db td.lb { font-weight: bold; vertical-align: middle; padding-top: 0; }

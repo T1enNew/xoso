@@ -19,13 +19,23 @@ npm run build
 npm start
 ```
 
-Sửa `server.js` xong thì phải tắt (Ctrl+C) và chạy lại server.
+Sửa `server.js` hay `lib/kqxs.js` xong thì phải tắt (Ctrl+C) và chạy lại server.
+
+Kiểm tra phần đọc dữ liệu: `npm test`.
+
+## Deploy (CI/CD)
+
+- **CI**: mỗi lần push hoặc mở pull request, GitHub Actions (`.github/workflows/ci.yml`) chạy `npm test` và `npm run build`. Kết quả xem ở tab Actions của repo.
+- **CD**: Vercel nối với repo này. Push lên `main` là Vercel tự build và cập nhật trang chính; nhánh khác thì có link xem trước.
+  Trên Vercel, `/api/kqxs` chạy bằng `api/kqxs.js` (máy chủ Singapore, xem `vercel.json`), và CDN giữ câu trả lời vài giây tới một ngày tuỳ loại để không hỏi dồn nguồn.
 
 ## Cấu trúc
 
-- `server.js`: lấy kết quả từ xskt.com.vn và trả JSON tại `/api/kqxs?mien=mn|mt|mb&date=YYYY-MM-DD`.
+- `lib/kqxs.js`: lấy kết quả từ xskt.com.vn, trả JSON cho `/api/kqxs?mien=mn|mt|mb&date=YYYY-MM-DD`.
   Hôm nay lấy từ RSS, lúc đang xổ lấy từ nguồn trực tiếp; ngày cũ lấy từ trang theo ngày, trang đó lỗi thì tìm trong trang theo thứ.
+- `server.js`: chạy ở máy (phục vụ trang và `/api/kqxs`). `api/kqxs.js`: chạy trên Vercel.
 - `src/`: giao diện React (Vite). Phiếu ở `src/components/Slips.jsx`, bảng ở `src/components/ResultTable.jsx`.
+- `test/`: kiểm tra phần đọc dữ liệu, không cần mạng.
 - `legacy/index.html`: bản cũ viết bằng một file HTML.
 
 ## Lưu ý
