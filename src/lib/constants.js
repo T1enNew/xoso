@@ -30,8 +30,18 @@ export const THU = ['Chủ Nhật', 'Thứ Hai', 'Thứ Ba', 'Thứ Tư', 'Thứ
 export const THU_NGAN = ['CN', 'T.2', 'T.3', 'T.4', 'T.5', 'T.6', 'T.7'];
 export const DEFAULT_FOOTER = 'TRƯỜNG THỊNH : 0918 643 803';
 
+// Tiền thưởng ghi trên bảng A4 (vé 10.000đ)
+const PRIZE_NAM_TRUNG = {
+  '8': '100.000', '7': '200.000', '6': '400.000', '5': '1 triệu', '4': '3 triệu',
+  '3': '10 triệu', '2': '15 triệu', '1': '30 triệu', 'ĐB': '2 tỷ',
+};
+export const PRIZE = {
+  mn: PRIZE_NAM_TRUNG,
+  mt: PRIZE_NAM_TRUNG,
+  mb: { 'ĐB': '1 tỷ', '1': '10 triệu', '2': '5 triệu', '3': '1 triệu', '4': '400.000', '5': '200.000', '6': '100.000', '7': '40.000' },
+};
+
 export const KHO_OPTIONS = [
-  { value: 'phieu', label: 'Phiếu', sub: '6 tờ / A4' },
-  { value: 'a4', label: 'Bảng', sub: 'A4' },
-  { value: 'k80', label: 'Bill', sub: '80mm' },
+  { value: 'phieu', label: 'Phiếu', sub: '6 phiếu / tờ A4' },
+  { value: 'a4', label: 'Bảng', sub: '1 bảng / tờ A4' },
 ];

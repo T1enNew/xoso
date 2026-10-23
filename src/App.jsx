@@ -13,17 +13,13 @@ import {
 import { store, suggestCode, useStored } from './lib/storage.js';
 import { addDays, fmtDate, todayISO, vnNow, weekday } from './lib/time.js';
 
-const PAGE_CSS = {
-  phieu: '@page { size: A4; margin: 0; }',
-  k80: '@page { size: 80mm auto; margin: 2mm; }',
-  a4: '',
-};
 const MAX_COPIES = 100;
 const QUICK_COPIES = [5, 10, 20, 50];
 
 export default function App() {
   const mien = 'mn'; // chỉ in Miền Nam
-  const [kho, setKho] = useStored('kho', 'phieu');
+  const [khoRaw, setKho] = useStored('kho', 'phieu');
+  const kho = KHO_OPTIONS.some(o => o.value === khoRaw) ? khoRaw : 'phieu'; // máy còn lưu kiểu đã bỏ (bill) thì về phiếu
   const [footer, setFooter] = useStored('footer', DEFAULT_FOOTER);
   const [skip, setSkip] = useStored('skip', [], { json: true });
   const [copies, setCopies] = useStored('copies', '1');
@@ -98,7 +94,7 @@ export default function App() {
   // Lớp trên body để CSS in biết đang in kiểu nào
   useEffect(() => {
     document.body.classList.toggle('phieu', kho === 'phieu');
-    document.body.classList.toggle('k80', kho === 'k80');
+    document.body.classList.toggle('a4', kho === 'a4');
   }, [kho]);
 
   // Khi in (bấm nút hay Ctrl+P) mới vẽ thêm các tờ còn lại, để màn hình bình thường vẫn nhẹ
@@ -130,7 +126,7 @@ export default function App() {
   if (!data) sheet = <p className="empty">{status.kind === 'err' ? status.text : 'Đang tải…'}</p>;
   else if (!provinces) sheet = <p className="empty">Ngày {fmtDate(data.date)} ({THU[weekday(data.date)]}) không có kỳ quay {NAME[data.mien]}.</p>;
   else if (kho === 'phieu') sheet = <Slips data={data} provinces={provinces} skip={skip} footer={footer} getCode={getCode} />;
-  else sheet = <ResultTable data={data} provinces={provinces} />;
+  else sheet = <ResultTable data={data} provinces={provinces} skip={skip} footer={footer} getCode={getCode} />;
 
   return (
     <div className="app">
@@ -162,20 +158,21 @@ export default function App() {
           <Segmented name="kho" options={KHO_OPTIONS} value={kho} onChange={setKho} />
         </section>
 
-        {kho === 'phieu' && (
-          <section>
-            <p className="lbl">Đài in &amp; mã vé</p>
-            <DaiList provinces={provinces || []} skip={skip} onToggle={toggleDai} getCode={getCode} onCode={setCode} />
-            <p className="lbl">Dòng cuối phiếu</p>
-            <input className="field" placeholder="Tên đại lý : số điện thoại" value={footer}
-              onChange={e => setFooter(e.target.value)} onBlur={() => setFooter(formatPhones)} />
-          </section>
-        )}
+        <section>
+          <p className="lbl">Đài in &amp; mã vé</p>
+          <DaiList provinces={provinces || []} skip={skip} onToggle={toggleDai} getCode={getCode} onCode={setCode} />
+        </section>
+
+        <section>
+          <p className="lbl">Dòng cuối</p>
+          <input className="field" placeholder="Tên đại lý : số điện thoại" value={footer}
+            onChange={e => setFooter(e.target.value)} onBlur={() => setFooter(formatPhones)} />
+        </section>
 
         <section className="actions">
           <div className="lbl-row">
             <p className="lbl">Số tờ in</p>
-            <span className="hint">{kho === 'phieu' ? `${n} tờ A4 = ${n * 6} phiếu` : `${n} tờ`}</span>
+            <span className="hint">{kho === 'phieu' ? `${n} tờ A4 = ${n * 6} phiếu` : `${n} tờ A4`}</span>
           </div>
           <div className="copies">
             <div className="stepper">
@@ -201,7 +198,6 @@ export default function App() {
         <div className="sheet">{sheet}</div>
         {printing && provinces && Array.from({ length: n - 1 }, (_, i) => <div key={i} className="sheet">{sheet}</div>)}
       </main>
-      <style>{PAGE_CSS[kho] || ''}</style>
     </div>
   );
 }
