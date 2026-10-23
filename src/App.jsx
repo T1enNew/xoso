@@ -109,19 +109,26 @@ export default function App() {
     };
   }, []);
 
-  // Bản xem trước tờ A4 tự thu nhỏ cho vừa bề ngang màn hình (điện thoại, iPad); lúc in vẫn đúng khổ
+  // Bản xem trước tự co giãn cho vừa bề ngang màn hình (điện thoại, iPad); lúc in vẫn đúng khổ.
+  // Bề ngang bản xem trước lấy từ --sheet-w trong CSS: cả tờ A4, hoặc 1 phiếu trên điện thoại.
   const stageRef = useRef(null);
   useEffect(() => {
     const el = stageRef.current;
-    const a4px = (210 / 25.4) * 96; // bề ngang tờ A4 tính bằng px màn hình
-    const ro = new ResizeObserver(() => {
+    const update = () => {
+      const sheetEl = el.querySelector('.sheet');
+      if (!sheetEl) return;
       const cs = getComputedStyle(el);
-      const w = el.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
-      el.style.setProperty('--zoom', Math.min(1, w / a4px).toFixed(3));
-    });
+      const avail = el.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
+      const mm = parseFloat(getComputedStyle(sheetEl).getPropertyValue('--sheet-w')) || 210;
+      const px = (mm / 25.4) * 96;
+      // Cả tờ A4 thì chỉ thu nhỏ; 1 phiếu thì được phóng to tới 1,6 lần cho dễ đọc
+      el.style.setProperty('--zoom', Math.min(mm < 200 ? 1.6 : 1, avail / px).toFixed(3));
+    };
+    update();
+    const ro = new ResizeObserver(update);
     ro.observe(el);
     return () => ro.disconnect();
-  }, []);
+  }, [kho]);
 
   const changeDate = iso => setDate(iso > today ? today : iso);
   const n = Math.min(MAX_COPIES, Math.max(1, parseInt(copies, 10) || 1));
@@ -212,6 +219,7 @@ export default function App() {
       </aside>
 
       <main className="stage" ref={stageRef}>
+        <p className="preview-note">Xem trước 1 phiếu · khi in: 6 phiếu / tờ A4</p>
         <div className="sheet">{sheet}</div>
         {printing && provinces && Array.from({ length: n - 1 }, (_, i) => <div key={i} className="sheet">{sheet}</div>)}
       </main>

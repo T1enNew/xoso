@@ -3,6 +3,9 @@
   --red: #c8102e; --green: #1a7f37; --amber: #c26a00; --blue: #2457c5;
 }
 * { box-sizing: border-box; }
+/* iPhone tự phóng to chữ nhỏ (làm chữ trong phiếu tràn ô): tắt đi, giữ đúng cỡ đã tính */
+html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+button, input { -webkit-tap-highlight-color: transparent; }
 body { margin: 0; background: var(--bg); color: var(--ink); font: 15px/1.45 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
 button, input { font: inherit; color: inherit; }
 
@@ -28,6 +31,9 @@ button, input { font: inherit; color: inherit; }
 .link:hover { text-decoration: underline; }
 .daterow { display: grid; grid-template-columns: 42px 1fr 42px; gap: 6px; }
 .daterow .field { height: 42px; text-align: center; font-weight: 600; font-variant-numeric: tabular-nums; min-width: 0; }
+/* iPhone: ô ngày có bề ngang tối thiểu riêng nên tràn ra ngoài; bỏ kiểu mặc định để nó co theo cột */
+.daterow input[type=date] { -webkit-appearance: none; appearance: none; display: block; width: 100%; line-height: 1.2; }
+.daterow input[type=date]::-webkit-date-and-time-value { text-align: center; }
 
 /* Số tờ in: ô [− số +] liền khối, bên cạnh là các nút chọn nhanh */
 .copies { display: flex; align-items: center; gap: 8px; }
@@ -74,8 +80,9 @@ button, input { font: inherit; color: inherit; }
 .status.err .dot { background: var(--amber); }
 @keyframes pulse { 50% { opacity: .25; } }
 
-.stage { padding: 28px; overflow: auto; display: flex; flex-direction: column; align-items: safe center; gap: 24px; }
-.sheet { background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,.08), 0 8px 24px rgba(0,0,0,.08); width: 210mm; min-height: 297mm; padding: 12mm; flex: none; }
+.stage { padding: 28px; overflow: auto; display: flex; flex-direction: column; align-items: center; align-items: safe center; gap: 24px; }
+.sheet { --sheet-w: 210mm; background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,.08), 0 8px 24px rgba(0,0,0,.08); width: 210mm; min-height: 297mm; padding: 12mm; flex: none; }
+.preview-note { display: none; }
 .empty { padding: 80px 20px; text-align: center; color: var(--muted); grid-column: 1 / -1; }
 .spin { color: #b3aca4 !important; font-variant-numeric: tabular-nums; }
 
@@ -177,10 +184,18 @@ body.phieu .sheet { height: 296mm; min-height: 0; padding: 4mm; display: grid; g
   .mobile-bar {
     display: flex; align-items: center; gap: 12px; position: fixed; left: 0; right: 0; bottom: 0; z-index: 30;
     padding: 10px 16px calc(10px + env(safe-area-inset-bottom));
-    background: rgba(255,255,255,.96); border-top: 1px solid var(--line); box-shadow: 0 -4px 16px rgba(0,0,0,.06);
+    background: #fff; border-top: 1px solid var(--line); box-shadow: 0 -4px 16px rgba(0,0,0,.06);
   }
   .mobile-bar .hint { flex: 1; font-size: 13.5px; }
   .mobile-bar .btn { min-width: 150px; padding: 12px 18px; }
+}
+
+/* Điện thoại, kiểu phiếu: xem trước 1 phiếu phóng to cho dễ đọc (khi in vẫn đủ 6 phiếu một tờ) */
+@media screen and (max-width: 639px) {
+  body.phieu .sheet { --sheet-w: 70mm; width: 70mm; height: 148mm; padding: 0; display: block; }
+  body.phieu .sheet .slip { height: 100%; outline: 0; }
+  body.phieu .sheet .slip:nth-child(n+2) { display: none; }
+  body.phieu .preview-note { display: block; margin: 0; text-align: center; font-size: 13px; color: var(--muted); }
 }
 
 /* iPad dựng: thẻ chia 2 cột */
