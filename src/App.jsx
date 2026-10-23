@@ -109,8 +109,24 @@ export default function App() {
     };
   }, []);
 
+  // Bản xem trước tờ A4 tự thu nhỏ cho vừa bề ngang màn hình (điện thoại, iPad); lúc in vẫn đúng khổ
+  const stageRef = useRef(null);
+  useEffect(() => {
+    const el = stageRef.current;
+    const a4px = (210 / 25.4) * 96; // bề ngang tờ A4 tính bằng px màn hình
+    const ro = new ResizeObserver(() => {
+      const cs = getComputedStyle(el);
+      const w = el.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
+      el.style.setProperty('--zoom', Math.min(1, w / a4px).toFixed(3));
+    });
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
+
   const changeDate = iso => setDate(iso > today ? today : iso);
   const n = Math.min(MAX_COPIES, Math.max(1, parseInt(copies, 10) || 1));
+  const copiesText = kho === 'phieu' ? `${n} tờ A4 = ${n * 6} phiếu` : `${n} tờ A4`;
+  const print = () => window.print();
 
   const codeDate = data?.date || date;
   const getCode = name => codes[`${codeDate}.${name}`] ?? suggestCode(codeDate, name);
@@ -139,7 +155,7 @@ export default function App() {
           </div>
         </header>
 
-        <section>
+        <section className="sec-date">
           <div className="lbl-row">
             <p className="lbl">Ngày xổ · {THU[weekday(date)]}</p>
             {date !== today && <button className="link" onClick={() => changeDate(today)}>Về hôm nay</button>}
@@ -153,17 +169,17 @@ export default function App() {
           </div>
         </section>
 
-        <section>
+        <section className="sec-kho">
           <p className="lbl">Kiểu in</p>
           <Segmented name="kho" options={KHO_OPTIONS} value={kho} onChange={setKho} />
         </section>
 
-        <section>
+        <section className="sec-dai">
           <p className="lbl">Đài in &amp; mã vé</p>
           <DaiList provinces={provinces || []} skip={skip} onToggle={toggleDai} getCode={getCode} onCode={setCode} />
         </section>
 
-        <section>
+        <section className="sec-foot">
           <p className="lbl">Dòng cuối</p>
           <input className="field" placeholder="Tên đại lý : số điện thoại" value={footer}
             onChange={e => setFooter(e.target.value)} onBlur={() => setFooter(formatPhones)} />
@@ -172,7 +188,7 @@ export default function App() {
         <section className="actions">
           <div className="lbl-row">
             <p className="lbl">Số tờ in</p>
-            <span className="hint">{kho === 'phieu' ? `${n} tờ A4 = ${n * 6} phiếu` : `${n} tờ A4`}</span>
+            <span className="hint">{copiesText}</span>
           </div>
           <div className="copies">
             <div className="stepper">
@@ -188,16 +204,23 @@ export default function App() {
               ))}
             </div>
           </div>
-          <button className="btn primary" onClick={() => window.print()}>In {n} tờ</button>
+          <button className="btn primary" onClick={print}>In {n} tờ</button>
           <button className="btn" onClick={() => setReload(x => x + 1)}>Làm mới kết quả</button>
-          <div className={`status ${status.kind}`}><span className="dot" /><span>{status.text}</span></div>
         </section>
+
+        <div className={`status ${status.kind}`}><span className="dot" /><span>{status.text}</span></div>
       </aside>
 
-      <main className="stage">
+      <main className="stage" ref={stageRef}>
         <div className="sheet">{sheet}</div>
         {printing && provinces && Array.from({ length: n - 1 }, (_, i) => <div key={i} className="sheet">{sheet}</div>)}
       </main>
+
+      {/* Điện thoại, iPad dựng: nút in luôn nằm ở đáy màn hình */}
+      <div className="mobile-bar">
+        <span className="hint">{copiesText}</span>
+        <button className="btn primary" onClick={print}>In {n} tờ</button>
+      </div>
     </div>
   );
 }

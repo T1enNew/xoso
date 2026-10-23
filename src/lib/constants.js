@@ -19,11 +19,11 @@ export const ORDER = {
 };
 
 // Tiền thưởng in ở cột trái của phiếu (vé 10.000đ)
-const LABEL_NAM_TRUNG = { '8': '100', '7': '200', '6': '400', '5': '1T', '4': '3T', '3': '10T', '2': '15T', '1': '30T', 'ĐB': 'ĐB' };
+const LABEL_NAM_TRUNG = { '8': '100', '7': '200', '6': '400', '5': '1TR', '4': '3TR', '3': '10TR', '2': '15TR', '1': '30TR', 'ĐB': 'ĐB' };
 export const LABEL = {
   mn: LABEL_NAM_TRUNG,
   mt: LABEL_NAM_TRUNG,
-  mb: { 'ĐB': 'ĐB', '1': '10T', '2': '5T', '3': '1T', '4': '400', '5': '200', '6': '100', '7': '40' },
+  mb: { 'ĐB': 'ĐB', '1': '10TR', '2': '5TR', '3': '1TR', '4': '400', '5': '200', '6': '100', '7': '40' },
 };
 
 export const THU = ['Chủ Nhật', 'Thứ Hai', 'Thứ Ba', 'Thứ Tư', 'Thứ Năm', 'Thứ Sáu', 'Thứ Bảy'];
