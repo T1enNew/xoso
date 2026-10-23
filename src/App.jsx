@@ -6,7 +6,7 @@ import Segmented from './components/Segmented.jsx';
 import Slips from './components/Slips.jsx';
 import { describe, fetchResults, provincesOf } from './lib/api.js';
 import {
-  DEFAULT_FOOTER, DRAW_END, DRAW_TIME, KHO_OPTIONS, MIEN_OPTIONS, NAME, THU, WATCH_FROM,
+  DEFAULT_FOOTER, DRAW_END, DRAW_TIME, KHO_OPTIONS, NAME, THU, WATCH_FROM,
 } from './lib/constants.js';
 import { store, suggestCode, useStored } from './lib/storage.js';
 import { addDays, fmtDate, todayISO, vnNow, weekday } from './lib/time.js';
@@ -18,7 +18,7 @@ const PAGE_CSS = {
 };
 
 export default function App() {
-  const [mien, setMien] = useStored('mien', 'mn');
+  const mien = 'mn'; // chỉ in Miền Nam
   const [kho, setKho] = useStored('kho', 'phieu');
   const [footer, setFooter] = useStored('footer', DEFAULT_FOOTER);
   const [skip, setSkip] = useStored('skip', [], { json: true });
@@ -111,10 +111,6 @@ export default function App() {
     setWatching(false);
     setDate(iso > today ? today : iso);
   };
-  const changeMien = v => {
-    setWatching(false);
-    setMien(v);
-  };
   const toggleWatch = () => {
     if (watching) {
       setWatching(false);
@@ -147,15 +143,10 @@ export default function App() {
         <header className="brand">
           <div className="logo">XS</div>
           <div>
-            <h1>In kết quả xổ số</h1>
+            <h1>In kết quả xổ số {NAME[mien]}</h1>
             <Clock />
           </div>
         </header>
-
-        <section>
-          <p className="lbl">Miền</p>
-          <Segmented name="mien" options={MIEN_OPTIONS} value={mien} onChange={changeMien} />
-        </section>
 
         <section>
           <p className="lbl">Ngày xổ</p>
