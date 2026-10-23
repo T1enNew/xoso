@@ -150,13 +150,16 @@ export default function App() {
         </header>
 
         <section>
-          <p className="lbl">Ngày xổ</p>
+          <div className="lbl-row">
+            <p className="lbl">Ngày xổ · {THU[weekday(date)]}</p>
+            {date !== today && <button className="link" onClick={() => changeDate(today)}>Về hôm nay</button>}
+          </div>
           <div className="daterow">
-            <button className="icon" title="Ngày trước" onClick={() => changeDate(addDays(date, -1))}>‹</button>
+            <button className="icon" title="Ngày trước" aria-label="Ngày trước" onClick={() => changeDate(addDays(date, -1))}>‹</button>
             <input type="date" className="field" value={date} max={today}
               onChange={e => e.target.value && changeDate(e.target.value)} />
-            <button className="icon" title="Ngày sau" disabled={date >= today} onClick={() => changeDate(addDays(date, 1))}>›</button>
-            <button className="ghost" onClick={() => changeDate(today)}>Hôm nay</button>
+            <button className="icon" title="Ngày sau" aria-label="Ngày sau" disabled={date >= today}
+              onClick={() => changeDate(addDays(date, 1))}>›</button>
           </div>
         </section>
 

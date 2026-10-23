@@ -22,14 +22,17 @@ button, input { font: inherit; color: inherit; }
 .seg input:checked + label { background: #fff; color: var(--red); box-shadow: 0 1px 2px rgba(0,0,0,.08), 0 0 0 1px var(--line); }
 .seg input:focus-visible + label { outline: 2px solid var(--red); outline-offset: 1px; }
 
-.daterow { display: flex; gap: 6px; }
-.daterow input { flex: 1; min-width: 0; }
+.lbl-row { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; margin-bottom: 8px; }
+.lbl-row .lbl { margin: 0; }
+.link { border: 0; background: none; padding: 0; color: var(--red); font-weight: 600; font-size: 13px; cursor: pointer; }
+.link:hover { text-decoration: underline; }
+.daterow { display: grid; grid-template-columns: 42px 1fr 42px; gap: 6px; }
+.daterow .field { height: 42px; text-align: center; font-weight: 600; font-variant-numeric: tabular-nums; min-width: 0; }
 .field { border: 1px solid var(--line); border-radius: 9px; padding: 8px 10px; background: #fff; width: 100%; }
 .field:focus { outline: 2px solid var(--red); outline-offset: -1px; border-color: transparent; }
-.icon { width: 38px; flex: none; border: 1px solid var(--line); border-radius: 9px; background: #fff; cursor: pointer; font-size: 18px; line-height: 1; }
+.icon { height: 42px; border: 1px solid var(--line); border-radius: 9px; background: #fff; cursor: pointer; font-size: 20px; line-height: 1; }
 .icon:disabled { opacity: .35; cursor: default; }
-.ghost { border: 1px solid var(--line); border-radius: 9px; background: #fff; cursor: pointer; padding: 0 12px; font-weight: 600; font-size: 13.5px; }
-.icon:hover:not(:disabled), .ghost:hover { border-color: #c9c2b9; }
+.icon:hover:not(:disabled) { border-color: #c9c2b9; background: var(--soft); }
 
 .dai-list { display: flex; flex-direction: column; gap: 6px; margin-bottom: 14px; }
 .dai { display: flex; align-items: center; gap: 8px; padding: 6px 6px 6px 10px; border: 1px solid var(--line); border-radius: 9px; }
@@ -102,7 +105,7 @@ body.phieu .sheet { height: 296mm; min-height: 0; padding: 4mm; display: grid; g
 .slip tr.g8 td.v { font-size: var(--f8); font-weight: bold; }
 .slip tr.db td.v { font-size: var(--fdb); font-weight: bold; }
 .slip tr.db td.lb { font-weight: bold; vertical-align: middle; padding-top: 0; }
-.slip td.ft { border-top: 0.3mm solid #000; font-size: 8pt; font-weight: bold; padding: 0.8mm; }
+.slip td.ft { border-top: 0.3mm solid #000; font-size: var(--ffoot); font-weight: bold; padding: 0.8mm 0.5mm; line-height: 1.15; }
 @media screen { .slip { outline: 1px dashed #d6d0c8; outline-offset: -0.5px; } }
 
 @media (max-width: 900px) {

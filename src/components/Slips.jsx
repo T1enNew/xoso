@@ -6,9 +6,18 @@ import { Num } from './Spin.jsx';
 // Cỡ chữ (pt) cho phiếu sao cho vừa khung 1/6 tờ A4
 const PT = 0.3528; // 1pt = 0.3528mm
 const LABEL_COL = 10.5; // bề ngang (mm) cột trái: ngày ở dòng tiêu đề, tiền thưởng ở các dòng dưới
+const SLIP_W = 202 / 3 - 4; // bề ngang (mm) bên trong một phiếu
+
+// Đo bề ngang thật của dòng chữ (tính theo cỡ chữ) bằng canvas, để dòng cuối dài vừa khít phiếu như tờ mẫu
+let measureCtx;
+function textEm(text) {
+  measureCtx ||= document.createElement('canvas').getContext('2d');
+  measureCtx.font = 'bold 100px Arial, Helvetica, sans-serif';
+  return measureCtx.measureText(text).width / 100;
+}
 function slipFonts(mien, rows, cols, codeLen, nameLen, per) {
   const H = 296 / 2 - 4 - 4 - 22;      // chiều cao còn cho các dòng số: trừ lề, tiêu đề, dòng cuối
-  const W = 202 / 3 - 4 - LABEL_COL;   // bề ngang cho các cột số: trừ lề phiếu và cột trái
+  const W = SLIP_W - LABEL_COL;        // bề ngang cho các cột số: trừ cột trái
   const colW = W / cols - 1.5;
   const fit = (mm, digits) => mm / (PT * 0.58 * digits); // chữ số Arial rộng ~0,56 cỡ chữ
   const fs = Math.min(H / PT / 1.15 / (rows + 1), fit(colW, 5), 17);
@@ -40,12 +49,14 @@ export default function Slips({ data, provinces, skip, footer, getCode }) {
   const hasCode = codes.some(Boolean);
   const nameLen = Math.max(...list.map(p => (p.name || NAME[m]).length));
   const f = slipFonts(m, groups.reduce((s, x) => s + x.n, 0), cols, Math.max(...codes.map(c => c.length)), nameLen, per);
+  const foot = formatPhones(footer.trim());
+  // Dòng cuối dài khoảng 90% bề ngang phiếu, to nhất 13pt
+  const ffoot = foot ? Math.min(13, (SLIP_W * 0.9) / PT / textEm(foot)) : 8;
   const style = {
     '--fs': `${f.fs.toFixed(1)}pt`, '--f8': `${f.f8.toFixed(1)}pt`, '--fdb': `${f.fdb.toFixed(1)}pt`,
-    '--fcode': `${f.fcode.toFixed(1)}pt`, '--fname': `${f.fname.toFixed(1)}pt`,
+    '--fcode': `${f.fcode.toFixed(1)}pt`, '--fname': `${f.fname.toFixed(1)}pt`, '--ffoot': `${ffoot.toFixed(1)}pt`,
   };
   const [y, mo, d] = data.date.split('-');
-  const foot = formatPhones(footer.trim());
 
   const slip = (
     <table>
