@@ -177,17 +177,19 @@ export default function App() {
             <p className="lbl">Số tờ in</p>
             <span className="hint">{kho === 'phieu' ? `${n} tờ A4 = ${n * 6} phiếu` : `${n} tờ`}</span>
           </div>
-          <div className="stepper">
-            <button className="icon" aria-label="Bớt 1 tờ" disabled={n <= 1} onClick={() => setCopies(String(n - 1))}>−</button>
-            <input className="field" inputMode="numeric" aria-label="Số tờ in" value={copies}
-              onChange={e => setCopies(e.target.value.replace(/\D/g, '').slice(0, 3))}
-              onBlur={() => setCopies(String(n))} />
-            <button className="icon" aria-label="Thêm 1 tờ" disabled={n >= MAX_COPIES} onClick={() => setCopies(String(n + 1))}>+</button>
-          </div>
-          <div className="chips">
-            {QUICK_COPIES.map(q => (
-              <button key={q} className={q === n ? 'chip on' : 'chip'} onClick={() => setCopies(String(q))}>{q}</button>
-            ))}
+          <div className="copies">
+            <div className="stepper">
+              <button aria-label="Bớt 1 tờ" disabled={n <= 1} onClick={() => setCopies(String(n - 1))}>−</button>
+              <input inputMode="numeric" aria-label="Số tờ in" value={copies}
+                onChange={e => setCopies(e.target.value.replace(/\D/g, '').slice(0, 3))}
+                onBlur={() => setCopies(String(n))} />
+              <button aria-label="Thêm 1 tờ" disabled={n >= MAX_COPIES} onClick={() => setCopies(String(n + 1))}>+</button>
+            </div>
+            <div className="chips">
+              {QUICK_COPIES.map(q => (
+                <button key={q} className={q === n ? 'chip on' : 'chip'} onClick={() => setCopies(String(q))}>{q}</button>
+              ))}
+            </div>
           </div>
           <button className="btn primary" onClick={() => window.print()}>In {n} tờ</button>
           <button className="btn" onClick={() => setReload(x => x + 1)}>Làm mới kết quả</button>
