@@ -4,9 +4,10 @@ import { Num } from './Spin.jsx';
 
 // Cỡ chữ (pt) cho phiếu sao cho vừa khung 1/6 tờ A4
 const PT = 0.3528; // 1pt = 0.3528mm
-function slipFonts(mien, rows, cols, codeLen) {
+const LABEL_COL = 10.5; // bề ngang (mm) cột trái: ngày ở dòng tiêu đề, tiền thưởng ở các dòng dưới
+function slipFonts(mien, rows, cols, codeLen, nameLen, per) {
   const H = 296 / 2 - 4 - 4 - 22;      // chiều cao còn cho các dòng số: trừ lề, tiêu đề, dòng cuối
-  const W = 202 / 3 - 4 - 9;           // bề ngang cho các cột số: trừ lề phiếu và cột tiền thưởng
+  const W = 202 / 3 - 4 - LABEL_COL;   // bề ngang cho các cột số: trừ lề phiếu và cột trái
   const colW = W / cols - 1.5;
   const fit = (mm, digits) => mm / (PT * 0.58 * digits); // chữ số Arial rộng ~0,56 cỡ chữ
   const fs = Math.min(H / PT / 1.15 / (rows + 1), fit(colW, 5), 17);
@@ -16,6 +17,8 @@ function slipFonts(mien, rows, cols, codeLen) {
     fdb: Math.min(fs * 1.3, fit(colW, SPEC[mien]['ĐB'][1])),
     // Mã vé có chữ in hoa (rộng hơn chữ số) nên thu nhỏ riêng cho vừa cột, tối đa bằng cỡ các con số
     fcode: Math.min(fs, colW / (PT * 0.7 * Math.max(codeLen, 1))),
+    // Tên đài cao cỡ 0,6 các con số như phiếu thật; tên dài thì thu nhỏ cho vừa một dòng, nhỏ nhất 7pt (chật quá thì xuống dòng)
+    fname: Math.max(7, Math.min(fs * 0.62, (colW * per) / (PT * 0.66 * nameLen))),
   };
 }
 
@@ -34,10 +37,11 @@ export default function Slips({ data, provinces, skip, footer, getCode }) {
   });
   const codes = list.map(p => (p.name ? getCode(p.name).trim().toUpperCase() : ''));
   const hasCode = codes.some(Boolean);
-  const f = slipFonts(m, groups.reduce((s, x) => s + x.n, 0), cols, Math.max(...codes.map(c => c.length)));
+  const nameLen = Math.max(...list.map(p => (p.name || NAME[m]).length));
+  const f = slipFonts(m, groups.reduce((s, x) => s + x.n, 0), cols, Math.max(...codes.map(c => c.length)), nameLen, per);
   const style = {
-    '--fs': `${f.fs.toFixed(1)}pt`, '--f8': `${f.f8.toFixed(1)}pt`,
-    '--fdb': `${f.fdb.toFixed(1)}pt`, '--fcode': `${f.fcode.toFixed(1)}pt`,
+    '--fs': `${f.fs.toFixed(1)}pt`, '--f8': `${f.f8.toFixed(1)}pt`, '--fdb': `${f.fdb.toFixed(1)}pt`,
+    '--fcode': `${f.fcode.toFixed(1)}pt`, '--fname': `${f.fname.toFixed(1)}pt`,
   };
   const [y, mo, d] = data.date.split('-');
   const foot = footer.trim();
@@ -45,7 +49,7 @@ export default function Slips({ data, provinces, skip, footer, getCode }) {
   const slip = (
     <table>
       <colgroup>
-        <col style={{ width: '9mm' }} />
+        <col style={{ width: `${LABEL_COL}mm` }} />
         {Array.from({ length: cols }, (_, i) => <col key={i} />)}
       </colgroup>
       <tbody>

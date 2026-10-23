@@ -92,10 +92,13 @@ body.phieu .sheet { height: 296mm; min-height: 0; padding: 4mm; display: grid; g
 .slip tr.hd th { border-bottom: 0.3mm solid #000; padding: 0.8mm 0.5mm 0.6mm; vertical-align: bottom; }
 .slip tr.hd th.lb { vertical-align: middle; }
 .slip tr.top td { border-top: 0.3mm solid #000; }
-.slip th.lb { font-size: 6.5pt; line-height: 1.25; }
+.slip th.lb { font-size: 8.5pt; line-height: 1.2; }
 .slip td.lb { font-size: 7pt; vertical-align: top; padding-top: 0.6mm; }
-.slip .pn { font-size: 7.5pt; text-transform: uppercase; white-space: normal; line-height: 1.1; }
+.slip .pn { font-size: var(--fname); text-transform: uppercase; white-space: normal; line-height: 1.15; }
 .slip .code { font-size: var(--fcode); line-height: 1.1; margin-top: 0.5mm; letter-spacing: 0; }
+/* Tên đài, mã vé và cả cột trái (ngày, tiền thưởng) đậm hơn chữ thường một chút như phiếu thật */
+.slip .pn, .slip .code { -webkit-text-stroke: 0.025em currentColor; }
+.slip .lb { -webkit-text-stroke: 0.03em currentColor; }
 .slip tr.g8 td.v { font-size: var(--f8); font-weight: bold; }
 .slip tr.db td.v { font-size: var(--fdb); font-weight: bold; }
 .slip tr.db td.lb { font-weight: bold; vertical-align: middle; padding-top: 0; }
