@@ -6,21 +6,33 @@ import ResultTable from './components/ResultTable.jsx';
 import Segmented from './components/Segmented.jsx';
 import Slips from './components/Slips.jsx';
 import { describe, fetchResults, provincesOf } from './lib/api.js';
-import { formatPhones } from './lib/phone.js';
+import { formatPhone, phoneMaxLen } from './lib/phone.js';
 import {
-  DEFAULT_FOOTER, DRAW_END, DRAW_TIME, KHO_OPTIONS, NAME, THU, WATCH_FROM,
+  DEFAULT_SHOP_NAME, DEFAULT_SHOP_PHONE, DRAW_END, DRAW_TIME, KHO_OPTIONS, NAME, THU, WATCH_FROM,
 } from './lib/constants.js';
 import { store, suggestCode, useStored } from './lib/storage.js';
 import { addDays, fmtDate, todayISO, vnNow, weekday } from './lib/time.js';
 
 const MAX_COPIES = 100;
+
+// Máy đã lưu dòng cuối kiểu cũ (một ô "TÊN : số") thì tách ra tên và số, khỏi phải gõ lại
+const SAVED_SHOP = (() => {
+  const old = store.get('footer');
+  if (old == null) return { name: DEFAULT_SHOP_NAME, phone: DEFAULT_SHOP_PHONE };
+  const i = old.lastIndexOf(':');
+  if (i < 0) return { name: old.trim(), phone: '' };
+  const phone = old.slice(i + 1).replace(/\D/g, '');
+  return { name: old.slice(0, i).trim(), phone: phone.slice(0, phoneMaxLen(phone)) };
+})();
 const QUICK_COPIES = [5, 10, 20, 50];
 
 export default function App() {
   const mien = 'mn'; // chỉ in Miền Nam
   const [khoRaw, setKho] = useStored('kho', 'phieu');
   const kho = KHO_OPTIONS.some(o => o.value === khoRaw) ? khoRaw : 'phieu'; // máy còn lưu kiểu đã bỏ (bill) thì về phiếu
-  const [footer, setFooter] = useStored('footer', DEFAULT_FOOTER);
+  const [shopName, setShopName] = useStored('shopName', SAVED_SHOP.name);
+  const [shopPhone, setShopPhone] = useStored('shopPhone', SAVED_SHOP.phone); // chỉ lưu chữ số
+  const footer = [shopName.trim(), formatPhone(shopPhone)].filter(Boolean).join(' : ');
   const [skip, setSkip] = useStored('skip', [], { json: true });
   const [copies, setCopies] = useStored('copies', '1');
   const [date, setDate] = useState(todayISO);
@@ -115,11 +127,11 @@ export default function App() {
   useEffect(() => {
     const el = stageRef.current;
     const update = () => {
-      const sheetEl = el.querySelector('.sheet');
-      if (!sheetEl) return;
+      const box = el.querySelector('.sheet-box');
+      if (!box) return;
       const cs = getComputedStyle(el);
       const avail = el.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
-      const mm = parseFloat(getComputedStyle(sheetEl).getPropertyValue('--sheet-w')) || 210;
+      const mm = parseFloat(getComputedStyle(box).getPropertyValue('--sheet-w')) || 210;
       const px = (mm / 25.4) * 96;
       // Cả tờ A4 thì chỉ thu nhỏ; 1 phiếu thì được phóng to tới 1,6 lần cho dễ đọc
       el.style.setProperty('--zoom', Math.min(mm < 200 ? 1.6 : 1, avail / px).toFixed(3));
@@ -134,6 +146,15 @@ export default function App() {
   const n = Math.min(MAX_COPIES, Math.max(1, parseInt(copies, 10) || 1));
   const copiesText = kho === 'phieu' ? `${n} tờ A4 = ${n * 6} phiếu` : `${n} tờ A4`;
   const print = () => window.print();
+
+  // Ô số điện thoại: chỉ nhận chữ số, đủ số thì không cho gõ thêm, tự cách nhóm khi gõ
+  const changePhone = raw => {
+    let d = raw.replace(/\D/g, '');
+    // Xoá trúng dấu cách (số không đổi mà chữ ngắn đi) thì xoá luôn chữ số đứng trước nó
+    if (d === shopPhone && raw.length < formatPhone(shopPhone).length) d = d.slice(0, -1);
+    setShopPhone(d.slice(0, phoneMaxLen(d)));
+  };
+  const phoneMissing = shopPhone ? phoneMaxLen(shopPhone) - shopPhone.length : 0;
 
   const codeDate = data?.date || date;
   const getCode = name => codes[`${codeDate}.${name}`] ?? suggestCode(codeDate, name);
@@ -188,8 +209,13 @@ export default function App() {
 
         <section className="sec-foot">
           <p className="lbl">Dòng cuối</p>
-          <input className="field" placeholder="Tên đại lý : số điện thoại" value={footer}
-            onChange={e => setFooter(e.target.value)} onBlur={() => setFooter(formatPhones)} />
+          <div className="shop">
+            <input className="field" aria-label="Tên đại lý" placeholder="Tên đại lý" value={shopName}
+              onChange={e => setShopName(e.target.value)} />
+            <input className="field phone" type="tel" inputMode="numeric" autoComplete="tel" aria-label="Số điện thoại"
+              placeholder="0918 643 803" value={formatPhone(shopPhone)} onChange={e => changePhone(e.target.value)} />
+          </div>
+          {phoneMissing > 0 && <p className="field-hint">Số điện thoại còn thiếu {phoneMissing} số</p>}
         </section>
 
         <section className="actions">
@@ -220,7 +246,7 @@ export default function App() {
 
       <main className="stage" ref={stageRef}>
         <p className="preview-note">Xem trước 1 phiếu · khi in: 6 phiếu / tờ A4</p>
-        <div className="sheet">{sheet}</div>
+        <div className="sheet-box"><div className="sheet">{sheet}</div></div>
         {printing && provinces && Array.from({ length: n - 1 }, (_, i) => <div key={i} className="sheet">{sheet}</div>)}
       </main>
 
