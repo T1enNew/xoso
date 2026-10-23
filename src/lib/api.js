@@ -1,3 +1,4 @@
+import { DRAW_TIME } from './constants.js';
 import { fmtDate } from './time.js';
 
 export async function fetchResults(mien, date) {
@@ -20,6 +21,7 @@ export function describe(d) {
   const stale = d.stale ? ' Nguồn đang chậm hoặc tạm chặn, có thể chưa phải số mới nhất.' : '';
   if (d.result?.complete) return { text: `Đã có đủ kết quả ngày ${day}.` + stale, kind: 'done' };
   if (d.result) return { text: `Đang xổ, mới có một phần kết quả ngày ${day}.` + stale, kind: 'live' };
-  if (d.planned) return { text: `Chưa có kết quả ngày ${day}. Bấm "Chờ giờ xổ" để tự cập nhật và tự in.` + stale, kind: 'wait' };
+  if (d.planned && d.isToday) return { text: `Chưa xổ. Trang tự cập nhật khi tới giờ xổ (${DRAW_TIME[d.mien]}).` + stale, kind: 'wait' };
+  if (d.planned) return { text: `Ngày ${day} chưa tới kỳ xổ.`, kind: 'wait' };
   return { text: `Ngày ${day} không có kỳ quay.`, kind: '' };
 }

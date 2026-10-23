@@ -19,7 +19,6 @@ export default function DaiList({ provinces, skip, onToggle, getCode, onCode }) 
           </div>
         );
       })}
-      <p className="hint">Mã vé in dưới tên đài. Tuần sau tự tăng số cuối (40 → 41), sai thì sửa lại.</p>
     </div>
   );
 }
