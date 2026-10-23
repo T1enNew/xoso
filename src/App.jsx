@@ -5,6 +5,7 @@ import ResultTable from './components/ResultTable.jsx';
 import Segmented from './components/Segmented.jsx';
 import Slips from './components/Slips.jsx';
 import { describe, fetchResults, provincesOf } from './lib/api.js';
+import { formatPhones } from './lib/phone.js';
 import {
   DEFAULT_FOOTER, DRAW_END, DRAW_TIME, KHO_OPTIONS, NAME, THU, WATCH_FROM,
 } from './lib/constants.js';
@@ -170,7 +171,7 @@ export default function App() {
             <DaiList provinces={provinces || []} skip={skip} onToggle={toggleDai} getCode={getCode} onCode={setCode} />
             <p className="lbl">Dòng cuối phiếu</p>
             <input className="field" placeholder="Tên đại lý : số điện thoại" value={footer}
-              onChange={e => setFooter(e.target.value)} />
+              onChange={e => setFooter(e.target.value)} onBlur={() => setFooter(formatPhones)} />
           </section>
         )}
 

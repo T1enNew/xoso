@@ -1,4 +1,5 @@
 import { LABEL, NAME, ORDER, SPEC, THU_NGAN } from '../lib/constants.js';
+import { formatPhones } from '../lib/phone.js';
 import { weekday } from '../lib/time.js';
 import { Num } from './Spin.jsx';
 
@@ -44,7 +45,7 @@ export default function Slips({ data, provinces, skip, footer, getCode }) {
     '--fcode': `${f.fcode.toFixed(1)}pt`, '--fname': `${f.fname.toFixed(1)}pt`,
   };
   const [y, mo, d] = data.date.split('-');
-  const foot = footer.trim();
+  const foot = formatPhones(footer.trim());
 
   const slip = (
     <table>

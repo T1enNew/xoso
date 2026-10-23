@@ -28,7 +28,7 @@ export const LABEL = {
 
 export const THU = ['Chủ Nhật', 'Thứ Hai', 'Thứ Ba', 'Thứ Tư', 'Thứ Năm', 'Thứ Sáu', 'Thứ Bảy'];
 export const THU_NGAN = ['CN', 'T.2', 'T.3', 'T.4', 'T.5', 'T.6', 'T.7'];
-export const DEFAULT_FOOTER = 'TRƯỜNG THỊNH : 079.3849803';
+export const DEFAULT_FOOTER = 'TRƯỜNG THỊNH : 0918 643 803';
 
 export const KHO_OPTIONS = [
   { value: 'phieu', label: 'Phiếu', sub: '6 tờ / A4' },
