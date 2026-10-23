@@ -1,7 +1,7 @@
-# xoso-print
+# Xổ Số Trường Thịnh
 
-In kết quả xổ số kiến thiết: phiếu 6 tờ / A4 (3 trên, 3 dưới), bảng A4 hoặc bill 80mm.
-Trong giờ xổ, trang tự cập nhật số đang ra (số chưa ra thì xoay) và tự in khi có đủ kết quả.
+Web in kết quả xổ số kiến thiết Miền Nam cho đại lý Trường Thịnh: phiếu 6 tờ / A4 (3 trên, 3 dưới) hoặc bảng A4, in nhiều tờ một lượt.
+Trong giờ xổ, trang tự cập nhật số đang ra (số chưa ra thì xoay). Dùng được trên máy tính, iPad và điện thoại.
 
 ## Chạy
 

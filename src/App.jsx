@@ -176,10 +176,10 @@ export default function App() {
     <div className="app">
       <aside className="panel">
         <header className="brand">
-          <div className="logo">XS</div>
+          <div className="logo" aria-hidden="true">TT</div>
           <div>
-            <h1>In kết quả xổ số {NAME[mien]}</h1>
-            <Clock />
+            <h1>Xổ Số Trường Thịnh</h1>
+            <Clock prefix={NAME[mien]} />
           </div>
         </header>
 
