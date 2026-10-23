@@ -1,0 +1,532 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>In kết quả xổ số</title>
+<style>
+  :root {
+    --bg: #eeebe6; --panel: #fff; --ink: #1d1b19; --muted: #6d6862; --line: #e2ddd6; --soft: #f6f4f1;
+    --red: #c8102e; --green: #1a7f37; --amber: #c26a00; --blue: #2457c5;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font: 15px/1.45 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+  button, input { font: inherit; color: inherit; }
+
+  .app { display: grid; grid-template-columns: 340px 1fr; min-height: 100vh; }
+  .panel { background: var(--panel); border-right: 1px solid var(--line); padding: 20px; display: flex; flex-direction: column; gap: 20px; position: sticky; top: 0; height: 100vh; overflow-y: auto; }
+  .brand { display: flex; gap: 12px; align-items: center; }
+  .logo { width: 44px; height: 44px; border-radius: 12px; background: var(--red); color: #fff; font-weight: 800; font-size: 17px; display: grid; place-items: center; flex: none; }
+  .brand h1 { font-size: 17px; margin: 0; line-height: 1.2; }
+  .clock { color: var(--muted); font-size: 13px; font-variant-numeric: tabular-nums; }
+  .lbl { font-size: 11.5px; font-weight: 700; text-transform: uppercase; letter-spacing: .07em; color: var(--muted); margin: 0 0 8px; }
+
+  .seg { position: relative; display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; gap: 3px; padding: 3px; background: var(--soft); border: 1px solid var(--line); border-radius: 11px; }
+  .seg input { position: absolute; opacity: 0; pointer-events: none; }
+  .seg label { text-align: center; padding: 8px 4px; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 14px; line-height: 1.2; }
+  .seg label small { display: block; font-size: 11.5px; color: var(--muted); font-weight: 400; margin-top: 2px; }
+  .seg label:hover { background: rgba(0,0,0,.03); }
+  .seg input:checked + label { background: #fff; color: var(--red); box-shadow: 0 1px 2px rgba(0,0,0,.08), 0 0 0 1px var(--line); }
+  .seg input:focus-visible + label { outline: 2px solid var(--red); outline-offset: 1px; }
+
+  .daterow { display: flex; gap: 6px; }
+  .daterow input { flex: 1; min-width: 0; }
+  .field { border: 1px solid var(--line); border-radius: 9px; padding: 8px 10px; background: #fff; width: 100%; }
+  .field:focus { outline: 2px solid var(--red); outline-offset: -1px; border-color: transparent; }
+  .icon { width: 38px; flex: none; border: 1px solid var(--line); border-radius: 9px; background: #fff; cursor: pointer; font-size: 18px; line-height: 1; }
+  .icon:disabled { opacity: .35; cursor: default; }
+  .ghost { border: 1px solid var(--line); border-radius: 9px; background: #fff; cursor: pointer; padding: 0 12px; font-weight: 600; font-size: 13.5px; }
+  .icon:hover:not(:disabled), .ghost:hover { border-color: #c9c2b9; }
+
+  .opt-phieu { display: none; }
+  body.phieu .opt-phieu { display: block; }
+  #daiList { display: flex; flex-direction: column; gap: 6px; margin-bottom: 14px; }
+  .dai { display: flex; align-items: center; gap: 8px; padding: 6px 6px 6px 10px; border: 1px solid var(--line); border-radius: 9px; }
+  .dai label { flex: 1; display: flex; align-items: center; gap: 8px; cursor: pointer; font-weight: 500; min-width: 0; }
+  .dai input[type=checkbox] { width: 16px; height: 16px; accent-color: var(--red); flex: none; }
+  .dai .code { width: 96px; border: 1px solid var(--line); border-radius: 7px; padding: 5px 8px; font-weight: 700; font-size: 13.5px; text-transform: uppercase; letter-spacing: .03em; }
+  .dai .code::placeholder { font-weight: 400; text-transform: none; letter-spacing: 0; }
+  .dai.off label { color: var(--muted); text-decoration: line-through; }
+  .dai.off .code { visibility: hidden; }
+  .hint { color: var(--muted); font-size: 13px; }
+
+  .actions { display: flex; flex-direction: column; gap: 10px; margin-top: auto; }
+  .check { display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 14px; }
+  .check input { width: 16px; height: 16px; accent-color: var(--red); }
+  .btn { font-weight: 650; padding: 11px 14px; border-radius: 10px; border: 1px solid var(--line); background: #fff; cursor: pointer; }
+  .btn:hover { border-color: #c9c2b9; }
+  .btn.primary { background: var(--red); border-color: var(--red); color: #fff; }
+  .btn.primary:hover { filter: brightness(1.07); }
+  .btn.primary.on { background: var(--ink); border-color: var(--ink); }
+  .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+
+  .status { display: flex; gap: 10px; align-items: flex-start; font-size: 13.5px; background: var(--soft); border-radius: 10px; padding: 10px 12px; }
+  .status .dot { width: 9px; height: 9px; border-radius: 50%; background: #b8b1a8; margin-top: 5px; flex: none; }
+  .status.live .dot { background: var(--red); animation: pulse 1.1s ease-in-out infinite; }
+  .status.done .dot { background: var(--green); }
+  .status.wait .dot { background: var(--blue); }
+  .status.err .dot { background: var(--amber); }
+  @keyframes pulse { 50% { opacity: .25; } }
+
+  .stage { padding: 28px; overflow: auto; display: flex; justify-content: center; align-items: flex-start; }
+  .sheet { background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,.08), 0 8px 24px rgba(0,0,0,.08); width: 210mm; min-height: 297mm; padding: 12mm; flex: none; }
+  .empty { padding: 80px 20px; text-align: center; color: var(--muted); grid-column: 1 / -1; }
+  .spin { color: #b3aca4 !important; font-variant-numeric: tabular-nums; }
+
+  /* Bảng kết quả (A4 hoặc bill 80mm) */
+  .bang h2 { text-align: center; font-size: 20px; margin: 0 0 4px; text-transform: uppercase; letter-spacing: .02em; }
+  .bang .sub { text-align: center; color: var(--muted); margin-bottom: 12px; font-size: 14px; }
+  .bang table { width: 100%; border-collapse: collapse; table-layout: fixed; }
+  .bang th, .bang td { border: 1px solid #222; padding: 6px 4px; text-align: center; vertical-align: middle; }
+  .bang th { background: #eee; }
+  .bang td.g { width: 56px; font-weight: 600; }
+  .bang .n { display: block; font-size: 18px; font-weight: 600; letter-spacing: 1px; line-height: 1.4; }
+  .bang tr.db .n, .bang tr.g8 .n { color: var(--red); font-size: 22px; }
+  .bang .foot { text-align: right; font-size: 11px; color: var(--muted); margin-top: 6px; }
+  body.k80 .sheet { width: 80mm; min-height: 0; padding: 3mm; }
+  body.k80 .bang h2 { font-size: 14px; }
+  body.k80 .bang .n { font-size: 13px; letter-spacing: 0; }
+  body.k80 .bang tr.db .n, body.k80 .bang tr.g8 .n { font-size: 15px; }
+  body.k80 .bang td.g { width: 30px; }
+  body.k80 .bang th, body.k80 .bang td { padding: 2px 1px; }
+
+  /* Phiếu: 6 phiếu giống nhau trên 1 tờ A4, 3 trên 3 dưới */
+  body.phieu .sheet { height: 296mm; min-height: 0; padding: 4mm; display: grid; grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(2, 1fr); overflow: hidden; }
+  .slip { padding: 2mm; overflow: hidden; min-width: 0; min-height: 0; }
+  .slip table { width: 100%; height: 100%; border-collapse: collapse; table-layout: fixed; border: 0.45mm solid #000; font-family: Arial, Helvetica, sans-serif; font-size: var(--fs); color: #000; }
+  .slip th, .slip td { border-left: 0.3mm solid #000; padding: 0 0.5mm; line-height: 1.15; font-weight: normal; text-align: center; white-space: nowrap; overflow: hidden; }
+  .slip th.lb, .slip td.lb, .slip td.sub, .slip td.ft { border-left: 0; }
+  .slip tr.hd th { border-bottom: 0.3mm solid #000; padding: 0.8mm 0.5mm; vertical-align: middle; }
+  .slip tr.top td { border-top: 0.3mm solid #000; }
+  .slip th.lb { font-size: 6.5pt; line-height: 1.25; }
+  .slip td.lb { font-size: 7pt; vertical-align: top; padding-top: 0.6mm; }
+  .slip .pn { font-size: 7.5pt; text-transform: uppercase; white-space: normal; line-height: 1.1; }
+  .slip .code { font-size: calc(var(--fs) * 1.15); line-height: 1.1; }
+  .slip tr.g8 td.v { font-size: var(--f8); font-weight: bold; }
+  .slip tr.db td.v { font-size: var(--fdb); font-weight: bold; }
+  .slip tr.db td.lb { font-weight: bold; vertical-align: middle; padding-top: 0; }
+  .slip td.ft { border-top: 0.3mm solid #000; font-size: 8pt; font-weight: bold; padding: 0.8mm; }
+  @media screen { .slip { outline: 1px dashed #d6d0c8; outline-offset: -0.5px; } }
+
+  @media (max-width: 900px) {
+    .app { grid-template-columns: 1fr; }
+    .panel { position: static; height: auto; border-right: 0; border-bottom: 1px solid var(--line); padding: 16px; }
+    .stage { padding: 16px; justify-content: flex-start; }
+  }
+
+  @media print {
+    body { background: #fff; }
+    .panel { display: none; }
+    .app { display: block; }
+    .stage { padding: 0; display: block; overflow: visible; }
+    .sheet { box-shadow: none; width: auto; min-height: 0; padding: 0; }
+    body.phieu .sheet { width: 210mm; height: 296mm; padding: 4mm; }
+    .bang th { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .bang tr.db .n, .bang tr.g8 .n { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  }
+  @page { size: A4; margin: 12mm; }
+</style>
+<style id="pageSize"></style>
+</head>
+<body>
+<div class="app">
+  <aside class="panel">
+    <header class="brand">
+      <div class="logo">XS</div>
+      <div>
+        <h1>In kết quả xổ số</h1>
+        <div class="clock" id="clock"></div>
+      </div>
+    </header>
+
+    <section>
+      <p class="lbl">Miền</p>
+      <div class="seg">
+        <input type="radio" name="mien" id="m-mn" value="mn" checked><label for="m-mn">Miền Nam<small>16:15</small></label>
+        <input type="radio" name="mien" id="m-mt" value="mt"><label for="m-mt">Miền Trung<small>17:15</small></label>
+        <input type="radio" name="mien" id="m-mb" value="mb"><label for="m-mb">Miền Bắc<small>18:15</small></label>
+      </div>
+    </section>
+
+    <section>
+      <p class="lbl">Ngày xổ</p>
+      <div class="daterow">
+        <button class="icon" id="prevDay" title="Ngày trước">‹</button>
+        <input type="date" id="ngay" class="field">
+        <button class="icon" id="nextDay" title="Ngày sau">›</button>
+        <button class="ghost" id="todayBtn">Hôm nay</button>
+      </div>
+    </section>
+
+    <section>
+      <p class="lbl">Kiểu in</p>
+      <div class="seg">
+        <input type="radio" name="kho" id="k-phieu" value="phieu" checked><label for="k-phieu">Phiếu<small>6 tờ / A4</small></label>
+        <input type="radio" name="kho" id="k-a4" value="a4"><label for="k-a4">Bảng<small>A4</small></label>
+        <input type="radio" name="kho" id="k-k80" value="k80"><label for="k-k80">Bill<small>80mm</small></label>
+      </div>
+    </section>
+
+    <section class="opt-phieu">
+      <p class="lbl">Đài in &amp; mã vé</p>
+      <div id="daiList"></div>
+      <p class="lbl">Dòng cuối phiếu</p>
+      <input id="footer" class="field" placeholder="Tên đại lý : số điện thoại">
+    </section>
+
+    <section class="actions">
+      <label class="check"><input type="checkbox" id="autoPrint" checked> Tự in khi có đủ kết quả</label>
+      <button id="btnWait" class="btn primary">Chờ giờ xổ</button>
+      <div class="row2">
+        <button id="btnFetch" class="btn">Làm mới</button>
+        <button id="btnPrint" class="btn">In ngay</button>
+      </div>
+      <div id="status" class="status"><span class="dot"></span><span id="statusText">Chưa lấy kết quả.</span></div>
+    </section>
+  </aside>
+
+  <main class="stage"><div class="sheet" id="sheet"></div></main>
+</div>
+
+<script>
+const $ = id => document.getElementById(id);
+const val = name => document.querySelector(`input[name="${name}"]:checked`).value;
+const setVal = (name, v) => { const el = document.querySelector(`input[name="${name}"][value="${v}"]`); if (el) el.checked = true; };
+const DRAW_TIME = { mn: '16:15', mt: '17:15', mb: '18:15' };
+const WATCH_FROM = { mn: '16:05', mt: '17:05', mb: '18:05' }; // từ giờ này dò nhanh (giờ VN)
+const DRAW_END = { mn: '16:50', mt: '17:50', mb: '18:50' };   // sau giờ này dò thưa lại
+// Mỗi giải: [số lượng số, số chữ số] để vẽ ô số xoay cho giải chưa ra
+const SPEC_NAM_TRUNG = { '8': [1, 2], '7': [1, 3], '6': [3, 4], '5': [1, 4], '4': [7, 5], '3': [2, 5], '2': [1, 5], '1': [1, 5], 'ĐB': [1, 6] };
+const SPEC = {
+  mn: SPEC_NAM_TRUNG,
+  mt: SPEC_NAM_TRUNG,
+  mb: { 'ĐB': [1, 5], '1': [1, 5], '2': [2, 5], '3': [6, 5], '4': [4, 4], '5': [6, 4], '6': [3, 3], '7': [4, 2] },
+};
+const NAME = { mn: 'Miền Nam', mt: 'Miền Trung', mb: 'Miền Bắc' };
+const ORDER = {
+  mn: ['8', '7', '6', '5', '4', '3', '2', '1', 'ĐB'],
+  mt: ['8', '7', '6', '5', '4', '3', '2', '1', 'ĐB'],
+  mb: ['ĐB', '1', '2', '3', '4', '5', '6', '7'],
+};
+// Tiền thưởng in ở cột trái của phiếu (vé 10.000đ)
+const LABEL_NAM_TRUNG = { '8': '100', '7': '200', '6': '400', '5': '1T', '4': '3T', '3': '10T', '2': '15T', '1': '30T', 'ĐB': 'ĐB' };
+const LABEL = {
+  mn: LABEL_NAM_TRUNG,
+  mt: LABEL_NAM_TRUNG,
+  mb: { 'ĐB': 'ĐB', '1': '10T', '2': '5T', '3': '1T', '4': '400', '5': '200', '6': '100', '7': '40' },
+};
+const THU = ['Chủ Nhật', 'Thứ Hai', 'Thứ Ba', 'Thứ Tư', 'Thứ Năm', 'Thứ Sáu', 'Thứ Bảy'];
+const THU_NGAN = ['CN', 'T.2', 'T.3', 'T.4', 'T.5', 'T.6', 'T.7'];
+const DEFAULT_FOOTER = 'TRƯỜNG THỊNH : 079.3849803';
+let watching = false;
+let timer = null;
+let printedKey = null;
+let last = null;   // dữ liệu lần lấy gần nhất, để vẽ lại khi đổi kiểu in, đài, mã vé
+let daiKey = '';
+
+// Lưu lựa chọn trên máy này (đài bỏ qua, mã vé, dòng cuối, kiểu in, miền)
+const store = {
+  get(k) { try { return localStorage.getItem('xoso.' + k); } catch { return null; } },
+  set(k, v) { try { localStorage.setItem('xoso.' + k, v); } catch {} },
+};
+let skip = new Set();
+try { skip = new Set(JSON.parse(store.get('skip') || '[]')); } catch {}
+
+function vnParts() {
+  const parts = new Intl.DateTimeFormat('en-GB', {
+    timeZone: 'Asia/Ho_Chi_Minh', year: 'numeric', month: '2-digit', day: '2-digit',
+    hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false,
+  }).formatToParts(new Date());
+  return Object.fromEntries(parts.map(p => [p.type, p.value]));
+}
+const vnNow = () => { const p = vnParts(); return p.hour + ':' + p.minute; };
+const todayISO = () => { const p = vnParts(); return `${p.year}-${p.month}-${p.day}`; };
+const weekday = iso => new Date(iso + 'T00:00:00Z').getUTCDay();
+const fmtDate = iso => iso.split('-').reverse().join('/');
+const addDays = (iso, n) => new Date(Date.parse(iso + 'T00:00:00Z') + n * 864e5).toISOString().slice(0, 10);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const randDigits = len => Array.from({ length: len }, () => Math.floor(Math.random() * 10)).join('');
+const staleNote = d => d.stale ? ' Nguồn đang chậm hoặc tạm chặn, có thể chưa phải số mới nhất.' : '';
+
+function setStatus(text, kind = '') {
+  $('statusText').textContent = text;
+  $('status').className = 'status ' + kind;
+}
+
+// Ô số đang xoay; pre là các chữ số đã ra của số đang quay dở
+const spin = (len, pre = '', cls = '') =>
+  `<span class="${cls} spin" data-len="${len - pre.length}" data-pre="${esc(pre)}">${esc(pre)}${randDigits(len - pre.length)}</span>`;
+const isDone = (v, len) => v && v.length >= len;
+
+// Làm các ô chưa có số xoay liên tục
+setInterval(() => {
+  document.querySelectorAll('.spin').forEach(el => { el.textContent = el.dataset.pre + randDigits(+el.dataset.len); });
+}, 80);
+
+function tickClock() {
+  const p = vnParts();
+  $('clock').textContent = `${p.hour}:${p.minute}:${p.second} · ${THU[weekday(todayISO())]}, ${p.day}/${p.month}/${p.year}`;
+}
+tickClock();
+setInterval(tickClock, 1000);
+
+// Mã vé (vd 35TV40) không có trong nguồn nên tự gõ. Chưa gõ thì lấy mã tuần trước và tăng số cuối.
+function getCode(date, name) {
+  const v = store.get(`code.${date}.${name}`);
+  if (v != null) return v;
+  for (let k = 1; k <= 8; k++) {
+    const prev = store.get(`code.${addDays(date, -7 * k)}.${name}`);
+    if (prev) return prev.replace(/\d+$/, n => String(+n + k).padStart(n.length, '0'));
+  }
+  return '';
+}
+
+// Các đài để vẽ. Chưa có số thì server gửi danh sách đài theo lịch, ô nào cũng xoay.
+function provincesOf(data) {
+  if (data.result) return data.result.provinces;
+  if (data.planned) return data.planned.map(name => ({ name, prizes: {} }));
+  return null;
+}
+
+function render(data) {
+  last = data;
+  const provs = provincesOf(data);
+  renderDaiList(data, provs || []);
+  if (!provs) {
+    $('sheet').innerHTML = `<p class="empty">Ngày ${fmtDate(data.date)} (${THU[weekday(data.date)]}) không có kỳ quay ${NAME[data.mien]}.</p>`;
+    return;
+  }
+  $('sheet').innerHTML = val('kho') === 'phieu' ? slipsHtml(data, provs) : tableHtml(data, provs);
+}
+
+function tableHtml(data, provs) {
+  const head = provs[0].name
+    ? '<tr><th>Giải</th>' + provs.map(p => `<th>${esc(p.name)}</th>`).join('') + '</tr>'
+    : '';
+  const rows = ORDER[data.mien].map(g => {
+    const cls = g === 'ĐB' ? 'db' : g === '8' ? 'g8' : '';
+    const [count, len] = SPEC[data.mien][g];
+    const cells = provs.map(p => {
+      const nums = p.prizes[g] || [];
+      return '<td>' + Array.from({ length: count }, (_, i) =>
+        isDone(nums[i], len) ? `<span class="n">${esc(nums[i])}</span>` : spin(len, nums[i], 'n')).join('') + '</td>';
+    }).join('');
+    return `<tr class="${cls}"><td class="g">${g === 'ĐB' ? 'ĐB' : 'G' + g}</td>${cells}</tr>`;
+  }).join('');
+  const sub = data.result
+    ? data.result.title.replace(/^KẾT QUẢ XỔ SỐ\s+/i, '')
+    : `${THU[weekday(data.date)]}, ngày ${fmtDate(data.date)} · đang chờ xổ`;
+  return `<div class="bang">
+    <h2>Kết quả xổ số ${NAME[data.mien]}</h2>
+    <div class="sub">${esc(sub)}</div>
+    <table>${head}${rows}</table>
+    <div class="foot">Nguồn: xskt.com.vn · In lúc ${vnNow()}</div></div>`;
+}
+
+// Cỡ chữ (pt) cho phiếu sao cho vừa khung 1/6 tờ A4
+const PT = 0.3528; // 1pt = 0.3528mm
+function slipFonts(mien, rows, cols) {
+  const H = 296 / 2 - 4 - 4 - 22;      // chiều cao còn cho các dòng số: trừ lề, tiêu đề, dòng cuối
+  const W = 202 / 3 - 4 - 9;           // bề ngang cho các cột số: trừ lề phiếu và cột tiền thưởng
+  const colW = W / cols - 1.5;
+  const fit = (mm, digits) => mm / (PT * 0.58 * digits); // chữ số Arial rộng ~0,56 cỡ chữ
+  const fs = Math.min(H / PT / 1.15 / (rows + 1), fit(colW, 5), 17);
+  return { fs, f8: Math.min(fs * 1.6, fit(colW, 3)), fdb: Math.min(fs * 1.3, fit(colW, SPEC[mien]['ĐB'][1])) };
+}
+
+function slipsHtml(data, provs) {
+  const m = data.mien;
+  const per = m === 'mb' ? 2 : 1; // miền Bắc chỉ 1 đài nên xếp 2 số mỗi dòng
+  const list = provs.filter(p => !p.name || !skip.has(p.name))
+    .sort((a, b) => (a.name || '').localeCompare(b.name || '', 'vi'));
+  if (!list.length) return '<p class="empty">Chưa chọn đài nào để in.</p>';
+  const cols = list.length * per;
+  const [y, mo, d] = data.date.split('-');
+  const head = `<tr class="hd"><th class="lb">${THU_NGAN[weekday(data.date)]}<br>${d}/${mo}<br>${y}</th>` +
+    list.map(p => {
+      const code = p.name ? getCode(data.date, p.name) : '';
+      return `<th colspan="${per}"><div class="pn">${esc(p.name || NAME[m])}</div>${code ? `<div class="code">${esc(code.toUpperCase())}</div>` : ''}</th>`;
+    }).join('') + '</tr>';
+  let rows = 0;
+  const body = ORDER[m].map(g => {
+    const [count, len] = SPEC[m][g];
+    const n = Math.ceil(count / per);
+    rows += n;
+    const cls = g === 'ĐB' ? 'db' : g === '8' ? 'g8' : '';
+    return Array.from({ length: n }, (_, r) => {
+      const cells = list.map(p => Array.from({ length: per }, (_, s) => {
+        const i = r * per + s;
+        const v = (p.prizes[g] || [])[i];
+        const content = i >= count ? '' : isDone(v, len) ? esc(v) : spin(len, v);
+        return `<td class="v${s ? ' sub' : ''}">${content}</td>`;
+      }).join('')).join('');
+      const lb = r === 0 ? `<td class="lb" rowspan="${n}">${LABEL[m][g]}</td>` : '';
+      return `<tr class="${cls}${r === 0 ? ' top' : ''}">${lb}${cells}</tr>`;
+    }).join('');
+  }).join('');
+  const footer = $('footer').value.trim();
+  const foot = footer ? `<tr><td class="ft" colspan="${cols + 1}">${esc(footer)}</td></tr>` : '';
+  const f = slipFonts(m, rows, cols);
+  const style = `--fs:${f.fs.toFixed(1)}pt;--f8:${f.f8.toFixed(1)}pt;--fdb:${f.fdb.toFixed(1)}pt`;
+  const slip = `<div class="slip" style="${style}"><table><colgroup><col style="width:9mm">${'<col>'.repeat(cols)}</colgroup>${head}${body}${foot}</table></div>`;
+  return slip.repeat(6);
+}
+
+// Danh sách đài để chọn in và gõ mã vé. Chỉ vẽ lại khi đổi ngày/đài để không mất chỗ đang gõ.
+function renderDaiList(data, provs) {
+  const named = provs.filter(p => p.name);
+  const key = data.date + '|' + named.map(p => p.name).join('|');
+  if (key === daiKey) return;
+  daiKey = key;
+  $('daiList').innerHTML = named.map(p => `
+    <div class="dai${skip.has(p.name) ? ' off' : ''}">
+      <label><input type="checkbox" data-dai="${esc(p.name)}"${skip.has(p.name) ? '' : ' checked'}>${esc(p.name)}</label>
+      <input class="code" placeholder="Mã vé" data-code="${esc(p.name)}" value="${esc(getCode(data.date, p.name))}">
+    </div>`).join('')
+    || `<div class="hint">${provs.length ? 'Miền Bắc chỉ có một bảng kết quả.' : 'Không có đài nào.'}</div>`;
+}
+
+$('daiList').addEventListener('change', e => {
+  const name = e.target.dataset.dai;
+  if (!name) return;
+  e.target.checked ? skip.delete(name) : skip.add(name);
+  e.target.closest('.dai').classList.toggle('off', !e.target.checked);
+  store.set('skip', JSON.stringify([...skip]));
+  if (last) render(last);
+});
+$('daiList').addEventListener('input', e => {
+  const name = e.target.dataset.code;
+  if (!name || !last) return;
+  store.set(`code.${last.date}.${name}`, e.target.value.trim());
+  render(last);
+});
+$('footer').addEventListener('input', () => {
+  store.set('footer', $('footer').value);
+  if (last) render(last);
+});
+
+async function fetchOnce() {
+  const mien = val('mien');
+  const date = $('ngay').value;
+  const res = await fetch(`/api/kqxs?mien=${mien}&date=${date}`);
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.error || 'Lỗi server');
+  if (!data.date) throw new Error('server đang chạy bản cũ. Vào terminal bấm Ctrl+C rồi chạy lại: node server.js');
+  if (mien !== val('mien') || date !== $('ngay').value) return null; // đã đổi lựa chọn trong lúc chờ
+  render(data);
+  return data;
+}
+
+async function onFetch() {
+  try {
+    setStatus('Đang lấy…');
+    const d = await fetchOnce();
+    if (!d) return;
+    const day = fmtDate(d.date);
+    if (d.result && d.result.complete) setStatus(`Đã có đủ kết quả ngày ${day}.` + staleNote(d), 'done');
+    else if (d.result) setStatus(`Đang xổ, mới có một phần kết quả ngày ${day}.` + staleNote(d), 'live');
+    else if (d.planned) setStatus(`Chưa có kết quả ngày ${day}. Bấm "Chờ giờ xổ" để tự cập nhật và tự in.` + staleNote(d), 'wait');
+    else setStatus(`Ngày ${day} không có kỳ quay.`);
+    // Đang trong giờ xổ của hôm nay thì tự dò tiếp như trang gốc
+    const now = vnNow();
+    if (d.isToday && !(d.result && d.result.complete) && now >= WATCH_FROM[d.mien] && now <= DRAW_END[d.mien]) startWatch();
+  } catch (e) { setStatus('Lỗi: ' + e.message, 'err'); }
+}
+
+function startWatch() {
+  if (watching) return;
+  watching = true;
+  $('btnWait').textContent = 'Dừng chờ';
+  $('btnWait').classList.add('on');
+  tick();
+}
+
+function stopWatch() {
+  watching = false;
+  clearTimeout(timer); timer = null;
+  $('btnWait').textContent = 'Chờ giờ xổ';
+  $('btnWait').classList.remove('on');
+}
+
+async function tick() {
+  if (!watching) return;
+  const mien = val('mien');
+  const now = vnNow();
+  const today = todayISO();
+  setDate(today);
+  const early = now < WATCH_FROM[mien];
+  const wait = early ? 60 : now <= DRAW_END[mien] ? 10 : 60;
+  try {
+    // Chưa tới giờ mà đã có bảng chờ của hôm nay thì khỏi gọi nguồn
+    const d = early && last && last.mien === mien && last.date === today ? last : await fetchOnce();
+    if (!watching) return;
+    if (d && d.result && d.result.complete) {
+      stopWatch();
+      setStatus(`Đã có đủ kết quả ngày ${fmtDate(d.date)}.`, 'done');
+      const key = mien + d.date;
+      if ($('autoPrint').checked && printedKey !== key) {
+        printedKey = key;
+        setTimeout(() => window.print(), 500);
+      }
+      return;
+    }
+    if (d) {
+      if (early) setStatus(`Đang chờ giờ xổ ${NAME[mien]} (${DRAW_TIME[mien]}). Bây giờ ${now}.`, 'wait');
+      else if (d.result) setStatus(`Đang xổ trực tiếp · cập nhật mỗi ${wait} giây.` + staleNote(d), 'live');
+      else setStatus(`${now}: nguồn chưa có số hôm nay, thử lại sau ${wait} giây…` + staleNote(d), 'wait');
+    }
+  } catch (e) {
+    setStatus(`${now}: lỗi (${e.message}), thử lại sau ${wait} giây…`, 'err');
+  }
+  if (watching) timer = setTimeout(tick, wait * 1000);
+}
+
+function applyKho() {
+  const k = val('kho');
+  document.body.classList.toggle('k80', k === 'k80');
+  document.body.classList.toggle('phieu', k === 'phieu');
+  $('pageSize').textContent = k === 'k80' ? '@page { size: 80mm auto; margin: 2mm; }'
+    : k === 'phieu' ? '@page { size: A4; margin: 0; }' : '';
+  store.set('kho', k);
+  if (last) render(last);
+}
+
+function setDate(iso) {
+  const today = todayISO();
+  $('ngay').max = today;
+  $('ngay').value = iso > today ? today : iso;
+  $('nextDay').disabled = $('ngay').value >= today;
+}
+function changeDate(iso) {
+  setDate(iso);
+  stopWatch();
+  onFetch();
+}
+
+$('btnFetch').onclick = onFetch;
+$('btnPrint').onclick = () => window.print();
+$('btnWait').onclick = () => {
+  if (watching) { stopWatch(); setStatus('Đã dừng chờ.'); return; }
+  setDate(todayISO());
+  startWatch();
+};
+$('prevDay').onclick = () => changeDate(addDays($('ngay').value || todayISO(), -1));
+$('nextDay').onclick = () => changeDate(addDays($('ngay').value || todayISO(), 1));
+$('todayBtn').onclick = () => changeDate(todayISO());
+$('ngay').onchange = () => changeDate($('ngay').value || todayISO());
+document.querySelectorAll('input[name="mien"]').forEach(el => el.onchange = () => {
+  store.set('mien', val('mien'));
+  stopWatch();
+  onFetch();
+});
+document.querySelectorAll('input[name="kho"]').forEach(el => el.onchange = applyKho);
+
+setVal('mien', store.get('mien') || 'mn');
+setVal('kho', store.get('kho') || 'phieu');
+$('footer').value = store.get('footer') ?? DEFAULT_FOOTER;
+setDate(todayISO());
+applyKho();
+onFetch();
+</script>
+</body>
+</html>

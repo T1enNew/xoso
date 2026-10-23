@@ -1,0 +1,19 @@
+{
+  "name": "xoso-print",
+  "private": true,
+  "version": "1.0.0",
+  "description": "In kết quả xổ số (phiếu 6 tờ / A4, bảng A4, bill 80mm)",
+  "scripts": {
+    "dev": "node server.js --dev",
+    "build": "vite build",
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^6.1.2",
+    "vite": "^8.3.4"
+  }
+}
