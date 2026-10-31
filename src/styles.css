@@ -113,23 +113,30 @@ body.a4 .sheet { height: 296mm; min-height: 0; padding: 12mm; overflow: hidden; 
 .bang-foot { padding-top: 3mm; text-align: center; font-size: 14pt; font-weight: bold; }
 
 /* Phiếu: 6 phiếu giống nhau trên 1 tờ A4, 3 trên 3 dưới */
-body.phieu .sheet { height: 296mm; min-height: 0; padding: 4mm; display: grid; grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(2, 1fr); overflow: hidden; }
+/* Phiếu cao vừa nội dung (gọn như phiếu mẫu), xếp sát nhau từ đầu trang, phần thừa để trống ở cuối trang */
+body.phieu .sheet { height: 296mm; min-height: 0; padding: 4mm; display: grid; grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(2, auto); align-content: start; overflow: hidden; }
 .slip { padding: 2mm; overflow: hidden; min-width: 0; min-height: 0; }
-.slip table { width: 100%; height: 100%; border-collapse: collapse; table-layout: fixed; border: 0.45mm solid #000; font-family: Arial, Helvetica, sans-serif; font-size: var(--fs); color: #000; }
+.slip table { width: 100%; border-collapse: collapse; table-layout: fixed; border: 0.45mm solid #000; font-family: Arial, Helvetica, sans-serif; font-size: var(--fs); color: #000; }
 .slip th, .slip td { border-left: 0.3mm solid #000; padding: 0 0.5mm; line-height: 1.15; font-weight: normal; text-align: center; white-space: nowrap; overflow: hidden; }
 .slip th.lb, .slip td.lb, .slip td.sub, .slip td.ft { border-left: 0; }
 .slip tr.hd th { border-bottom: 0.3mm solid #000; padding: 0.8mm 0.5mm 0.6mm; vertical-align: bottom; }
 .slip tr.hd th.lb { vertical-align: middle; }
 .slip tr.top td { border-top: 0.3mm solid #000; }
 .slip th.lb { font-size: 8.5pt; line-height: 1.2; }
-.slip td.lb { font-size: 7pt; vertical-align: top; padding-top: 0.6mm; }
+.slip td.lb { font-size: 8pt; font-weight: bold; vertical-align: top; padding-top: 0.6mm; }
+/* Các con số: sát dòng, canh phải, đậm hơn chữ thường một chút như phiếu mẫu */
+.slip td.v { line-height: var(--lh); text-align: right; padding-right: 1.5mm; -webkit-text-stroke: 0.03em currentColor; }
+/* Chừa chút khoảng ở đầu và cuối mỗi nhóm giải để số không sát đường kẻ */
+.slip tr.top td.v { padding-top: 0.2mm; }
+.slip tr.end td.v { padding-bottom: 0.4mm; }
 .slip .pn { font-size: var(--fname); text-transform: uppercase; white-space: normal; line-height: 1.15; }
 .slip .code { font-size: var(--fcode); line-height: 1.1; margin-top: 0.5mm; letter-spacing: 0; }
 /* Tên đài, mã vé và cả cột trái (ngày, tiền thưởng) đậm hơn chữ thường một chút như phiếu thật */
 .slip .pn, .slip .code { -webkit-text-stroke: 0.025em currentColor; }
-.slip .lb { -webkit-text-stroke: 0.03em currentColor; }
-.slip tr.g8 td.v { font-size: var(--f8); font-weight: bold; }
-.slip tr.db td.v { font-size: var(--fdb); font-weight: bold; }
+.slip th.lb { -webkit-text-stroke: 0.03em currentColor; }
+/* Giải 8 và đặc biệt đã in đậm nên không tô thêm (tô thêm thì dính nét) */
+.slip tr.g8 td.v { font-size: var(--f8); font-weight: bold; -webkit-text-stroke: 0; }
+.slip tr.db td.v { font-size: var(--fdb); font-weight: bold; -webkit-text-stroke: 0; }
 /* ĐB đã in đậm nên bỏ lớp tô đậm thêm, không thì chữ Đ nhỏ bị dính nét */
 .slip tr.db td.lb { font-size: 9pt; font-weight: bold; vertical-align: middle; padding-top: 0; -webkit-text-stroke: 0; }
 .slip td.ft { border-top: 0.3mm solid #000; font-size: var(--ffoot); font-weight: bold; padding: 0.8mm 0.5mm; line-height: 1.15; }
@@ -202,9 +209,9 @@ body.phieu .sheet { height: 296mm; min-height: 0; padding: 4mm; display: grid; g
 
 /* Điện thoại, kiểu phiếu: xem trước 1 phiếu phóng to cho dễ đọc (khi in vẫn đủ 6 phiếu một tờ) */
 @media screen and (max-width: 639px) {
-  body.phieu .sheet-box { --sheet-w: 70mm; --sheet-h: 148mm; }
-  body.phieu .sheet { width: 70mm; height: 148mm; padding: 0; display: block; }
-  body.phieu .sheet .slip { height: 100%; outline: 0; }
+  body.phieu .sheet-box { --sheet-w: 70mm; --sheet-h: 136mm; }
+  body.phieu .sheet { width: 70mm; height: 136mm; padding: 0; display: block; }
+  body.phieu .sheet .slip { outline: 0; }
   body.phieu .sheet .slip:nth-child(n+2) { display: none; }
   body.phieu .preview-note { display: block; margin: 0; text-align: center; font-size: 13px; color: var(--muted); }
 }

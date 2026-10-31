@@ -3,10 +3,13 @@ import { formatPhones } from '../lib/phone.js';
 import { weekday } from '../lib/time.js';
 import { Num } from './Spin.jsx';
 
-// Cỡ chữ (pt) cho phiếu sao cho vừa khung 1/6 tờ A4
+// Cỡ chữ (pt) cho phiếu: gọn như phiếu mẫu (không kéo dài hết nửa tờ A4), số to và sát dòng
 const PT = 0.3528; // 1pt = 0.3528mm
 const LABEL_COL = 10.5; // bề ngang (mm) cột trái: ngày ở dòng tiêu đề, tiền thưởng ở các dòng dưới
 const SLIP_W = 202 / 3 - 4; // bề ngang (mm) bên trong một phiếu
+// Đo theo phiếu mẫu: phiếu cao ~2,07 lần bề ngang, các dòng số sát nhau (~0,85 cỡ chữ)
+const SLIP_H = 130; // chiều cao (mm) một phiếu (nửa tờ A4 là 144mm)
+const LH = 0.85; // khoảng cách các dòng số so với cỡ chữ
 
 // Đo bề ngang thật của dòng chữ (tính theo cỡ chữ) bằng canvas, để dòng cuối dài vừa khít phiếu như tờ mẫu
 let measureCtx;
@@ -16,11 +19,12 @@ function textEm(text) {
   return measureCtx.measureText(text).width / 100;
 }
 function slipFonts(mien, rows, cols, codeLen, nameLen, per) {
-  const H = 296 / 2 - 4 - 4 - 22;      // chiều cao còn cho các dòng số: trừ lề, tiêu đề, dòng cuối
+  const H = SLIP_H - 4 - 18 - 5;       // chiều cao còn cho các dòng số: trừ lề, tiêu đề + dòng cuối, khoảng hở các nhóm giải
   const W = SLIP_W - LABEL_COL;        // bề ngang cho các cột số: trừ cột trái
-  const colW = W / cols - 1.5;
-  const fit = (mm, digits) => mm / (PT * 0.58 * digits); // chữ số Arial rộng ~0,56 cỡ chữ
-  const fs = Math.min(H / PT / 1.15 / (rows + 1), fit(colW, 5), 17);
+  const colW = W / cols - 2;
+  const fit = (mm, digits) => mm / (PT * 0.6 * digits); // chữ số Arial (đậm nhẹ) rộng ~0,58 cỡ chữ
+  // rows + 0.9: dòng giải 8 và đặc biệt chữ to hơn nên chiếm thêm chỗ
+  const fs = Math.min(H / PT / LH / (rows + 0.9), fit(colW, 5), 19);
   return {
     fs,
     f8: Math.min(fs * 1.6, fit(colW, 3)),
@@ -55,6 +59,7 @@ export default function Slips({ data, provinces, skip, footer, getCode }) {
   const style = {
     '--fs': `${f.fs.toFixed(1)}pt`, '--f8': `${f.f8.toFixed(1)}pt`, '--fdb': `${f.fdb.toFixed(1)}pt`,
     '--fcode': `${f.fcode.toFixed(1)}pt`, '--fname': `${f.fname.toFixed(1)}pt`, '--ffoot': `${ffoot.toFixed(1)}pt`,
+    '--lh': LH,
   };
   const [y, mo, d] = data.date.split('-');
 
@@ -76,7 +81,7 @@ export default function Slips({ data, provinces, skip, footer, getCode }) {
           ))}
         </tr>
         {groups.flatMap(({ g, count, len, n }) => Array.from({ length: n }, (_, r) => (
-          <tr key={g + r} className={[g === 'ĐB' ? 'db' : g === '8' ? 'g8' : '', r === 0 ? 'top' : ''].join(' ').trim() || undefined}>
+          <tr key={g + r} className={[g === 'ĐB' ? 'db' : g === '8' ? 'g8' : '', r === 0 ? 'top' : '', r === n - 1 ? 'end' : ''].join(' ').trim() || undefined}>
             {r === 0 && <td className="lb" rowSpan={n}>{LABEL[m][g]}</td>}
             {list.flatMap((p, pi) => Array.from({ length: per }, (_, s) => {
               const i = r * per + s;
