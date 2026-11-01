@@ -5,7 +5,7 @@ import { Num } from './Spin.jsx';
 
 // Cỡ chữ (pt) cho phiếu: gọn như phiếu mẫu (không kéo dài hết nửa tờ A4), số to và sát dòng
 const PT = 0.3528; // 1pt = 0.3528mm
-const LABEL_COL = 10.5; // bề ngang (mm) cột trái: ngày ở dòng tiêu đề, tiền thưởng ở các dòng dưới
+const LABEL_COL = 9; // bề ngang (mm) cột trái: ngày ở dòng tiêu đề, tiền thưởng ở các dòng dưới
 const SLIP_W = 202 / 3 - 4; // bề ngang (mm) bên trong một phiếu
 // Đo theo phiếu mẫu: phiếu cao ~2,07 lần bề ngang, các dòng số sát nhau (~0,85 cỡ chữ)
 const SLIP_H = 130; // chiều cao (mm) một phiếu (nửa tờ A4 là 144mm)
