@@ -61,6 +61,11 @@ test('trang kết quả miền Bắc', () => {
   assert.deepEqual(t.provinces[0].prizes['3'], ['28087', '24887', '58423', '25269', '33005', '45004']);
 });
 
+test('Lâm Đồng (RSS) và LD (trực tiếp) đều ghi là Đà Lạt', () => {
+  assert.equal(parseDescription('[Lâm Đồng]\n8: 13')[0].name, 'Đà Lạt');
+  assert.equal(parseLive('LD,KG,TG:13', 'mn', '2026-11-01').provinces[0].name, 'Đà Lạt');
+});
+
 test('RSS: giải 7 và giải 8 dính chung một dòng', () => {
   const [p] = parseDescription('[Cần Thơ]\n8: 13\n7: 7458: 13\nĐB: 123456');
   assert.equal(p.name, 'Cần Thơ');
