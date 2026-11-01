@@ -137,7 +137,7 @@ body.phieu .sheet { height: 296mm; min-height: 0; padding: 9mm 4mm 4mm; display:
 .slip th.lb { -webkit-text-stroke: 0.03em currentColor; }
 /* Giải 8 và đặc biệt đã in đậm nên không tô thêm (tô thêm thì dính nét) */
 .slip tr.g8 td.v { font-size: var(--f8); font-weight: bold; -webkit-text-stroke: 0; }
-.slip tr.db td.v { font-size: var(--fdb); font-weight: bold; -webkit-text-stroke: 0; }
+.slip tr.db td.v { font-size: var(--fdb); font-weight: bold; -webkit-text-stroke: 0; padding-right: 0.8mm; }
 /* ĐB đã in đậm nên bỏ lớp tô đậm thêm, không thì chữ Đ nhỏ bị dính nét */
 .slip tr.db td.lb { font-size: 9pt; font-weight: bold; vertical-align: middle; padding-top: 0; -webkit-text-stroke: 0; }
 .slip td.ft { border-top: 0.3mm solid #000; font-size: var(--ffoot); font-weight: bold; padding: 0.8mm 0.5mm; line-height: 1.15; }
