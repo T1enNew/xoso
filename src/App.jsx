@@ -6,7 +6,7 @@ import ResultTable from './components/ResultTable.jsx';
 import Segmented from './components/Segmented.jsx';
 import Slips from './components/Slips.jsx';
 import { describe, fetchResults, provincesOf } from './lib/api.js';
-import { applyOrder, isAlphabetical, sortProvinces } from './lib/order.js';
+import { applyOrder, sortProvinces } from './lib/order.js';
 import { formatPhone, phoneMaxLen } from './lib/phone.js';
 import {
   DEFAULT_SHOP_NAME, DEFAULT_SHOP_PHONE, DRAW_END, DRAW_TIME, KHO_OPTIONS, NAME, THU, WATCH_FROM,
@@ -177,9 +177,7 @@ export default function App() {
   // Các đài xếp theo thứ tự người dùng chọn (▲▼), dùng chung cho danh sách bên trái, phiếu và bảng
   const provinces = data ? provincesOf(data) : null;
   const ordered = provinces && sortProvinces(provinces, order);
-  const names = (ordered || []).filter(p => p.name).map(p => p.name);
   const reorderDai = next => setOrder(o => applyOrder(o, next));
-  const resetOrder = () => setOrder(o => o.filter(n => !names.includes(n)));
 
   let sheet;
   if (!data) sheet = <p className="empty">{status.kind === 'err' ? status.text : 'Đang tải…'}</p>;
@@ -218,10 +216,7 @@ export default function App() {
         </section>
 
         <section className="sec-dai">
-          <div className="lbl-row">
-            <p className="lbl">Đài in &amp; mã vé</p>
-            {names.length > 1 && !isAlphabetical(names) && <button className="link" onClick={resetOrder}>Xếp A→Z</button>}
-          </div>
+          <p className="lbl">Đài in &amp; mã vé</p>
           <DaiList provinces={ordered || []} skip={skip} onToggle={toggleDai} getCode={getCode} onCode={setCode} onReorder={reorderDai} />
         </section>
 

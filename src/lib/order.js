@@ -9,5 +9,3 @@ export function sortProvinces(list, order) {
 // Lưu thứ tự mới của các đài đang hiện (sau khi kéo thả).
 // Thứ tự đã xếp của các đài ngày khác giữ nguyên ở phía sau.
 export const applyOrder = (order, next) => [...next, ...order.filter(n => !next.includes(n))];
-
-export const isAlphabetical = names => names.every((n, i) => i === 0 || byName(names[i - 1], n) <= 0);
