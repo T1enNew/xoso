@@ -6,7 +6,7 @@ import ResultTable from './components/ResultTable.jsx';
 import Segmented from './components/Segmented.jsx';
 import Slips from './components/Slips.jsx';
 import { describe, fetchResults, provincesOf } from './lib/api.js';
-import { isAlphabetical, moveProvince, sortProvinces } from './lib/order.js';
+import { isAlphabetical, moveProvinceTo, sortProvinces } from './lib/order.js';
 import { formatPhone, phoneMaxLen } from './lib/phone.js';
 import {
   DEFAULT_SHOP_NAME, DEFAULT_SHOP_PHONE, DRAW_END, DRAW_TIME, KHO_OPTIONS, NAME, THU, WATCH_FROM,
@@ -178,7 +178,8 @@ export default function App() {
   const provinces = data ? provincesOf(data) : null;
   const ordered = provinces && sortProvinces(provinces, order);
   const names = (ordered || []).filter(p => p.name).map(p => p.name);
-  const moveDai = (name, step) => setOrder(o => moveProvince(o, names, name, step));
+  const printedNames = names.filter(n => !skip.includes(n));
+  const moveDai = (name, idx) => setOrder(o => moveProvinceTo(o, names, printedNames, name, idx));
   const resetOrder = () => setOrder(o => o.filter(n => !names.includes(n)));
 
   let sheet;
@@ -222,7 +223,7 @@ export default function App() {
             <p className="lbl">Đài in &amp; mã vé</p>
             {names.length > 1 && !isAlphabetical(names) && <button className="link" onClick={resetOrder}>Xếp A→Z</button>}
           </div>
-          <DaiList provinces={ordered || []} skip={skip} onToggle={toggleDai} getCode={getCode} onCode={setCode} onMove={moveDai} />
+          <DaiList provinces={ordered || []} skip={skip} onToggle={toggleDai} getCode={getCode} onCode={setCode} onMoveTo={moveDai} />
         </section>
 
         <section className="sec-foot">
