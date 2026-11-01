@@ -31,11 +31,18 @@ export default function DaiList({ provinces, skip, onToggle, getCode, onCode, on
     // Ô mã vé để gõ chữ; cảm ứng thì chỉ kéo ở tay nắm cho trang vẫn cuộn được
     if (e.target.closest('.code') || (e.pointerType !== 'mouse' && !onGrip)) return;
     dragRef.current = {
-      idx, startY: e.clientY, pointerId: e.pointerId, active: onGrip && e.pointerType !== 'mouse',
+      idx, startY: e.clientY, pointerId: e.pointerId, el: e.currentTarget, active: false,
       rects: rowRefs.current.slice(0, named.length).map(el => el.getBoundingClientRect()),
     };
-    try { e.currentTarget.setPointerCapture(e.pointerId); } catch { /* kéo ra ngoài thanh thì thôi */ }
-    if (dragRef.current.active) setDrag({ idx, dy: 0, to: idx });
+    // Cảm ứng ở tay nắm: kéo luôn. Chuột: chờ di chuyển đủ xa mới kéo, để bấm ô tick vẫn ăn
+    if (onGrip && e.pointerType !== 'mouse') startDrag(dragRef.current);
+  };
+
+  // Chỉ giữ con trỏ khi đã thật sự kéo: giữ sớm thì cú bấm rơi vào thanh chứ không vào ô tick
+  const startDrag = d => {
+    d.active = true;
+    try { d.el.setPointerCapture(d.pointerId); } catch { /* không giữ được thì kéo trong phạm vi thanh */ }
+    setDrag({ idx: d.idx, dy: 0, to: d.idx });
   };
 
   const onPointerMove = e => {
@@ -44,7 +51,7 @@ export default function DaiList({ provinces, skip, onToggle, getCode, onCode, on
     const dy = e.clientY - d.startY;
     if (!d.active) {
       if (Math.abs(dy) < DRAG_START_PX) return;
-      d.active = true;
+      startDrag(d);
     }
     e.preventDefault();
     // Vị trí mới: đếm số thanh khác có tâm nằm trên tâm thanh đang kéo
