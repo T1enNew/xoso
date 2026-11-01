@@ -1,7 +1,7 @@
 // Kiểm tra phần đọc dữ liệu nguồn, không cần mạng: npm test
 const test = require('node:test');
 const assert = require('node:assert/strict');
-const { parseLive, parseTables, parseDescription } = require('../lib/kqxs.js');
+const { parseLive, parseTables, parseDescription, parseMinhNgocCodes } = require('../lib/kqxs.js');
 
 test('chuỗi trực tiếp miền Nam: tách đúng đài và giải', () => {
   const r = parseLive('VL,BD,TV:34090;2||26869;2', 'mn', '2026-10-16');
@@ -64,6 +64,23 @@ test('trang kết quả miền Bắc', () => {
 test('Lâm Đồng (RSS) và LD (trực tiếp) đều ghi là Đà Lạt', () => {
   assert.equal(parseDescription('[Lâm Đồng]\n8: 13')[0].name, 'Đà Lạt');
   assert.equal(parseLive('LD,KG,TG:13', 'mn', '2026-11-01').provinces[0].name, 'Đà Lạt');
+});
+
+test('ký hiệu vé Minh Ngọc: trang trực tiếp và trang theo ngày', () => {
+  const live = `<table class="bkqmiennam"><tr><td class="ngay"> 01/11/26</td></tr></table>
+<table class="rightcl"><tbody><tr><td class="tinh"><a href="#">Tiền Giang</a></td></tr><tr><td class="matinh">L: <span id="loaive_22" class="">TGA11</span></td></tr></tbody></table>
+<table class="rightcl"><tbody><tr><td class="tinh"><a href="#">Đà Lạt</a></td></tr><tr><td class="matinh">L: <span id="loaive_9">&#272;L11K1</span></td></tr></tbody></table>`;
+  assert.deepEqual(parseMinhNgocCodes(live), { '2026-11-01': { 'Tiền Giang': 'TGA11', 'Đà Lạt': 'ĐL11K1' } });
+
+  const day = `<table class="bkqmiennam"><tr><td class="ngay"> <a href="#">31/10/2026</a></td></tr></table>
+<table class="rightcl"> <tbody> <tr> <td class="tinh"> <a href="#" title="Xổ Số TP. HCM">TP. HCM</a></td> </tr> <tr> <td class="matinh"> XSHCM - 10E7</td> </tr> </tbody></table>
+<table class="rightcl"> <tbody> <tr> <td class="tinh"> <a href="#">Hậu Giang</a></td> </tr> <tr> <td class="matinh"> XSHG - K5T10</td> </tr> </tbody></table>
+<table class="bkqmiennam"><tr><td class="ngay"> <a href="#">30/10/2026</a></td></tr></table>
+<table class="rightcl"> <tbody> <tr> <td class="tinh"> <a href="#">Trà Vinh</a></td> </tr> <tr> <td class="matinh"> XSTV - 35TV44</td> </tr> </tbody></table>`;
+  assert.deepEqual(parseMinhNgocCodes(day), {
+    '2026-10-31': { 'Hồ Chí Minh': '10E7', 'Hậu Giang': 'K5T10' },
+    '2026-10-30': { 'Trà Vinh': '35TV44' },
+  });
 });
 
 test('RSS: giải 7 và giải 8 dính chung một dòng', () => {

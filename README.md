@@ -31,7 +31,7 @@ Kiểm tra phần đọc dữ liệu: `npm test`.
 
 ## Cấu trúc
 
-- `lib/kqxs.js`: lấy kết quả từ xskt.com.vn, trả JSON cho `/api/kqxs?mien=mn|mt|mb&date=YYYY-MM-DD`.
+- `lib/kqxs.js`: lấy kết quả từ xskt.com.vn và ký hiệu vé (Miền Nam) từ minhngoc.net.vn, trả JSON cho `/api/kqxs?mien=mn|mt|mb&date=YYYY-MM-DD`.
   Hôm nay lấy từ RSS, lúc đang xổ lấy từ nguồn trực tiếp; ngày cũ lấy từ trang theo ngày, trang đó lỗi thì tìm trong trang theo thứ.
 - `server.js`: chạy ở máy (phục vụ trang và `/api/kqxs`). `api/kqxs.js`: chạy trên Vercel.
 - `src/`: giao diện React (Vite). Phiếu ở `src/components/Slips.jsx`, bảng ở `src/components/ResultTable.jsx`.
@@ -40,4 +40,5 @@ Kiểm tra phần đọc dữ liệu: `npm test`.
 
 ## Lưu ý
 
-Điều khoản sử dụng của xskt.com.vn không cho dùng công cụ tự động thu thập dữ liệu, hay dùng vào mục đích kinh doanh, khi chưa được họ cho phép bằng văn bản.
+Điều khoản sử dụng của xskt.com.vn và của minhngoc.net.vn đều không cho dùng lại dữ liệu vào mục đích kinh doanh khi chưa được họ cho phép bằng văn bản.
+Kết quả trên phiếu chỉ để tham khảo; căn cứ cuối cùng là biên bản kết quả của công ty xổ số kiến thiết.

@@ -156,11 +156,19 @@ export default function App() {
   };
   const phoneMissing = shopPhone ? phoneMaxLen(shopPhone) - shopPhone.length : 0;
 
+  // Ký hiệu vé: chữ người dùng tự gõ > tự lấy từ Minh Ngọc (data.codes) > đoán theo tuần trước
   const codeDate = data?.date || date;
-  const getCode = name => codes[`${codeDate}.${name}`] ?? suggestCode(codeDate, name);
+  const autoCodes = data?.codes || {};
+  const getCode = name => {
+    const key = `${codeDate}.${name}`;
+    if (key in codes) return codes[key] ?? autoCodes[name] ?? '';
+    return store.get(`code.${key}`) ?? autoCodes[name] ?? suggestCode(codeDate, name);
+  };
   const setCode = (name, v) => {
-    store.set(`code.${codeDate}.${name}`, v.trim());
-    setCodes(c => ({ ...c, [`${codeDate}.${name}`]: v }));
+    const key = `${codeDate}.${name}`;
+    // Xoá trống ô thì quay về ký hiệu tự lấy
+    if (v.trim()) store.set(`code.${key}`, v.trim()); else store.del(`code.${key}`);
+    setCodes(c => ({ ...c, [key]: v.trim() ? v : null }));
   };
   const toggleDai = (name, on) => setSkip(s => on ? s.filter(x => x !== name) : [...s.filter(x => x !== name), name]);
 

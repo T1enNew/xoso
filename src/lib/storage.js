@@ -5,6 +5,7 @@ import { addDays } from './time.js';
 export const store = {
   get(k) { try { return localStorage.getItem('xoso.' + k); } catch { return null; } },
   set(k, v) { try { localStorage.setItem('xoso.' + k, v); } catch {} },
+  del(k) { try { localStorage.removeItem('xoso.' + k); } catch {} },
 };
 
 export function useStored(key, initial, { json = false } = {}) {
