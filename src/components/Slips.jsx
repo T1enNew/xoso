@@ -27,7 +27,7 @@ function slipFonts(mien, rows, cols, codeLen, nameLen, per) {
   const fs = Math.min(H / PT / LH / (rows + 0.9), fit(colW, 5), 19);
   return {
     fs,
-    f8: Math.min(fs * 1.6, fit(colW, 3)),
+    f8: Math.min(fs * 1.5, fit(colW, 3)),
     fdb: Math.min(fs * 1.3, fit(colW, SPEC[mien]['ĐB'][1])),
     // Mã vé có chữ in hoa (rộng hơn chữ số) nên thu nhỏ riêng cho vừa cột, tối đa bằng cỡ các con số
     fcode: Math.min(fs, colW / (PT * 0.7 * Math.max(codeLen, 1))),
