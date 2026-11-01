@@ -99,5 +99,7 @@ export default function Slips({ data, provinces, skip, footer, getCode }) {
     </table>
   );
 
-  return Array.from({ length: 6 }, (_, i) => <div key={i} className="slip" style={style}>{slip}</div>);
+  // In 1 đài thì cột số rất rộng, canh giữa cho cân; từ 2 đài thì canh phải như phiếu mẫu
+  const cls = list.length === 1 ? 'slip one' : 'slip';
+  return Array.from({ length: 6 }, (_, i) => <div key={i} className={cls} style={style}>{slip}</div>);
 }
