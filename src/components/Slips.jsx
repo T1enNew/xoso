@@ -37,12 +37,11 @@ function slipFonts(mien, rows, cols, codeLen, nameLen, per) {
   };
 }
 
-// 6 phiếu giống nhau trên 1 tờ A4, 3 trên 3 dưới
+// 6 phiếu giống nhau trên 1 tờ A4, 3 trên 3 dưới. Các đài đã được xếp sẵn theo thứ tự người dùng chọn.
 export default function Slips({ data, provinces, skip, footer, getCode }) {
   const m = data.mien;
   const per = m === 'mb' ? 2 : 1; // miền Bắc chỉ 1 đài nên xếp 2 số mỗi dòng
-  const list = provinces.filter(p => !p.name || !skip.includes(p.name))
-    .sort((a, b) => (a.name || '').localeCompare(b.name || '', 'vi'));
+  const list = provinces.filter(p => !p.name || !skip.includes(p.name));
   if (!list.length) return <p className="empty">Chưa chọn đài nào để in.</p>;
 
   const cols = list.length * per;

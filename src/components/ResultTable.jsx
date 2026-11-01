@@ -20,8 +20,7 @@ function tableFonts(mien, nProv) {
 // Một bảng kết quả vừa một tờ A4. Đài và thứ tự đài giống phiếu, mã vé in dưới tên đài.
 export default function ResultTable({ data, provinces: all, skip, footer, getCode }) {
   const m = data.mien;
-  const provinces = all.filter(p => !p.name || !skip.includes(p.name))
-    .sort((a, b) => (a.name || '').localeCompare(b.name || '', 'vi'));
+  const provinces = all.filter(p => !p.name || !skip.includes(p.name));
   if (!provinces.length) return <p className="empty">Chưa chọn đài nào để in.</p>;
   const codes = provinces.map(p => (p.name ? getCode(p.name).trim().toUpperCase() : ''));
   const hasCode = codes.some(Boolean);

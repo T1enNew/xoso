@@ -6,6 +6,7 @@ import ResultTable from './components/ResultTable.jsx';
 import Segmented from './components/Segmented.jsx';
 import Slips from './components/Slips.jsx';
 import { describe, fetchResults, provincesOf } from './lib/api.js';
+import { isAlphabetical, moveProvince, sortProvinces } from './lib/order.js';
 import { formatPhone, phoneMaxLen } from './lib/phone.js';
 import {
   DEFAULT_SHOP_NAME, DEFAULT_SHOP_PHONE, DRAW_END, DRAW_TIME, KHO_OPTIONS, NAME, THU, WATCH_FROM,
@@ -34,6 +35,7 @@ export default function App() {
   const [shopPhone, setShopPhone] = useStored('shopPhone', SAVED_SHOP.phone); // chỉ lưu chữ số
   const footer = [shopName.trim(), formatPhone(shopPhone)].filter(Boolean).join(' : ');
   const [skip, setSkip] = useStored('skip', [], { json: true });
+  const [order, setOrder] = useStored('order', [], { json: true });
   const [copies, setCopies] = useStored('copies', '1');
   const [date, setDate] = useState(todayISO);
   const [data, setData] = useState(null);
@@ -172,13 +174,18 @@ export default function App() {
   };
   const toggleDai = (name, on) => setSkip(s => on ? s.filter(x => x !== name) : [...s.filter(x => x !== name), name]);
 
+  // Các đài xếp theo thứ tự người dùng chọn (▲▼), dùng chung cho danh sách bên trái, phiếu và bảng
   const provinces = data ? provincesOf(data) : null;
+  const ordered = provinces && sortProvinces(provinces, order);
+  const names = (ordered || []).filter(p => p.name).map(p => p.name);
+  const moveDai = (name, step) => setOrder(o => moveProvince(o, names, name, step));
+  const resetOrder = () => setOrder(o => o.filter(n => !names.includes(n)));
 
   let sheet;
   if (!data) sheet = <p className="empty">{status.kind === 'err' ? status.text : 'Đang tải…'}</p>;
   else if (!provinces) sheet = <p className="empty">Ngày {fmtDate(data.date)} ({THU[weekday(data.date)]}) không có kỳ quay {NAME[data.mien]}.</p>;
-  else if (kho === 'phieu') sheet = <Slips data={data} provinces={provinces} skip={skip} footer={footer} getCode={getCode} />;
-  else sheet = <ResultTable data={data} provinces={provinces} skip={skip} footer={footer} getCode={getCode} />;
+  else if (kho === 'phieu') sheet = <Slips data={data} provinces={ordered} skip={skip} footer={footer} getCode={getCode} />;
+  else sheet = <ResultTable data={data} provinces={ordered} skip={skip} footer={footer} getCode={getCode} />;
 
   return (
     <div className="app">
@@ -211,8 +218,11 @@ export default function App() {
         </section>
 
         <section className="sec-dai">
-          <p className="lbl">Đài in &amp; mã vé</p>
-          <DaiList provinces={provinces || []} skip={skip} onToggle={toggleDai} getCode={getCode} onCode={setCode} />
+          <div className="lbl-row">
+            <p className="lbl">Đài in &amp; mã vé</p>
+            {names.length > 1 && !isAlphabetical(names) && <button className="link" onClick={resetOrder}>Xếp A→Z</button>}
+          </div>
+          <DaiList provinces={ordered || []} skip={skip} onToggle={toggleDai} getCode={getCode} onCode={setCode} onMove={moveDai} />
         </section>
 
         <section className="sec-foot">
