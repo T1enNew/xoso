@@ -57,20 +57,20 @@ button, input { font: inherit; color: inherit; }
 .icon:disabled { opacity: .35; cursor: default; }
 .icon:hover:not(:disabled) { border-color: #c9c2b9; background: var(--soft); }
 
-.dai-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 14px; }
-/* Mỗi đài một thẻ: dòng trên tick + tên + mã vé, dòng dưới chọn thứ tự in (chữ to, nút to cho dễ bấm) */
-.dai { display: flex; flex-direction: column; gap: 8px; padding: 10px 10px 10px 12px; border: 1px solid var(--line); border-radius: 10px; }
-.dai-main { display: flex; align-items: center; gap: 8px; }
-.dai label { flex: 1; display: flex; align-items: center; gap: 10px; cursor: pointer; font-weight: 600; font-size: 16px; min-width: 0; overflow-wrap: anywhere; }
-.dai input[type=checkbox] { width: 20px; height: 20px; accent-color: var(--red); flex: none; }
-.dai .code { width: 100px; border: 1px solid var(--line); border-radius: 7px; padding: 7px 8px; font-weight: 700; font-size: 14.5px; text-transform: uppercase; letter-spacing: .03em; }
+.dai-list { display: flex; flex-direction: column; gap: 6px; margin-bottom: 14px; }
+/* Mỗi đài một thanh: tay nắm ⠿, tick, tên, mã vé. Kéo thanh (máy tính) hoặc tay nắm (điện thoại) để đổi thứ tự */
+.dai { display: flex; align-items: center; gap: 8px; padding: 6px 8px 6px 4px; background: #fff; border: 1px solid var(--line); border-radius: 10px; cursor: grab; user-select: none; -webkit-user-select: none; transition: transform .15s ease, box-shadow .15s ease; }
+.dai-list.sorting .dai { cursor: grabbing; }
+.dai.dragging { position: relative; z-index: 5; transition: box-shadow .15s ease; border-color: var(--red); box-shadow: 0 6px 18px rgba(0,0,0,.14); }
+.dai .grip { flex: none; display: grid; place-items: center; width: 26px; align-self: stretch; margin: -6px 0; padding: 0; border: 0; background: none; color: #b8b1a8; cursor: grab; touch-action: none; border-radius: 8px; }
+.dai .grip svg { fill: currentColor; }
+.dai:hover .grip, .dai.dragging .grip { color: var(--red); }
+.dai .grip:focus-visible { outline: 2px solid var(--red); outline-offset: -2px; }
+.dai label { flex: 1; display: flex; align-items: center; gap: 10px; cursor: inherit; font-weight: 600; font-size: 15.5px; min-width: 0; overflow-wrap: anywhere; }
+.dai input[type=checkbox] { width: 19px; height: 19px; accent-color: var(--red); flex: none; cursor: pointer; }
+.dai .code { width: 100px; border: 1px solid var(--line); border-radius: 7px; padding: 6px 8px; font-weight: 700; font-size: 14px; text-transform: uppercase; letter-spacing: .03em; cursor: text; user-select: text; -webkit-user-select: text; }
 .dai .code::placeholder { font-weight: 400; text-transform: none; letter-spacing: 0; color: #b3aca4; }
 .dai .code:focus { outline: 2px solid var(--red); outline-offset: -1px; border-color: transparent; }
-.dai-pos { display: flex; align-items: center; gap: 6px; }
-.dai-pos span { font-size: 14px; color: var(--muted); margin-right: 2px; }
-.dai-pos button { width: 40px; height: 36px; border: 1px solid var(--line); border-radius: 8px; background: #fff; font-size: 16px; font-weight: 700; color: var(--ink); cursor: pointer; }
-.dai-pos button:hover { border-color: var(--red); color: var(--red); }
-.dai-pos button.on { background: var(--red); border-color: var(--red); color: #fff; cursor: default; }
 .dai.off label { color: var(--muted); text-decoration: line-through; }
 .dai.off .code { visibility: hidden; }
 .hint { color: var(--muted); font-size: 13px; margin-bottom: 14px; }
@@ -120,9 +120,9 @@ body.a4 .sheet { height: 296mm; min-height: 0; padding: 12mm; overflow: hidden; 
 .bang-foot { padding-top: 3mm; text-align: center; font-size: 14pt; font-weight: bold; }
 
 /* Phiếu: 6 phiếu giống nhau trên 1 tờ A4, 3 trên 3 dưới */
-/* Phiếu cao vừa nội dung (gọn như phiếu mẫu), xếp từ đầu trang: lề trên hở một chút (9mm), giấy thừa để ở dưới.
+/* Phiếu cao vừa nội dung (gọn như phiếu mẫu), xếp từ đầu trang: lề trên hở một chút (5mm, khung phiếu cách mép 7mm), giấy thừa để ở dưới.
    Giữa 2 hàng phiếu chừa thêm 1mm (khung cách nhau 5mm). */
-body.phieu .sheet { height: 296mm; min-height: 0; padding: 9mm 4mm 4mm; display: grid; grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(2, auto); row-gap: 1mm; align-content: start; overflow: hidden; }
+body.phieu .sheet { height: 296mm; min-height: 0; padding: 5mm 4mm 4mm; display: grid; grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(2, auto); row-gap: 1mm; align-content: start; overflow: hidden; }
 /* Đường kẻ bên trong phiếu mảnh hơn khung ngoài (0,45mm) cho nhẹ mắt;
    đường ngang ngăn các nhóm giải còn mảnh hơn nữa (0,15mm) */
 .slip { --slip-line: 0.2mm solid #000; --slip-hline: 0.15mm solid #000; padding: 2mm; overflow: hidden; min-width: 0; min-height: 0; }
@@ -207,7 +207,8 @@ body.phieu .sheet { height: 296mm; min-height: 0; padding: 9mm 4mm 4mm; display:
   .stepper { height: 42px; grid-template-columns: 38px 50px 38px; }
   .chip { height: 42px; }
   .dai input[type=checkbox] { width: 22px; height: 22px; }
-  .dai-pos button { width: 48px; height: 44px; font-size: 17px; }
+  .dai { padding-top: 8px; padding-bottom: 8px; }
+  .dai .grip { width: 38px; margin: -8px 0; }
 
   /* Nút in nằm cố định ở đáy màn hình, nút trong thẻ thì ẩn cho khỏi trùng */
   .actions .btn.primary { display: none; }
