@@ -125,7 +125,7 @@ body.phieu .sheet { height: 296mm; min-height: 0; padding: 4mm; display: grid; g
 .slip th.lb { font-size: 8.5pt; line-height: 1.2; }
 .slip td.lb { font-size: 8pt; font-weight: bold; vertical-align: top; padding-top: 0.6mm; }
 /* Các con số: sát dòng, canh phải, đậm hơn chữ thường một chút như phiếu mẫu */
-.slip td.v { line-height: var(--lh); text-align: right; padding-right: 1.5mm; -webkit-text-stroke: 0.03em currentColor; }
+.slip td.v { line-height: var(--lh); text-align: right; padding-right: 1.5mm; -webkit-text-stroke: 0.015em currentColor; }
 /* Chừa chút khoảng ở đầu và cuối mỗi nhóm giải để số không sát đường kẻ */
 .slip tr.top td.v { padding-top: 0.2mm; }
 .slip tr.end td.v { padding-bottom: 0.4mm; }
