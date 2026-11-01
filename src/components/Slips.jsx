@@ -30,8 +30,8 @@ function slipFonts(mien, rows, cols, codeLen, nameLen, per) {
     f8: Math.min(fs * 1.5, fit(colW, 3)),
     // Đặc biệt: chừa ~4mm bề ngang quanh số để số cách xa khung (chữ số đậm rộng ~0,556 cỡ chữ)
     fdb: Math.min(fs * 1.3, (W / cols - 4) / (PT * 0.565 * SPEC[mien]['ĐB'][1])),
-    // Mã vé có chữ in hoa (rộng hơn chữ số) nên thu nhỏ riêng cho vừa cột, tối đa bằng cỡ các con số
-    fcode: Math.min(fs, colW / (PT * 0.7 * Math.max(codeLen, 1))),
+    // Mã vé có chữ in hoa (rộng hơn chữ số) nên thu nhỏ riêng cho vừa cột, tối đa 0,88 cỡ các con số
+    fcode: Math.min(fs * 0.88, colW / (PT * 0.7 * Math.max(codeLen, 1))),
     // Tên đài cao cỡ 0,6 các con số như phiếu thật; tên dài thì thu nhỏ cho vừa một dòng, nhỏ nhất 7pt (chật quá thì xuống dòng)
     fname: Math.max(7, Math.min(fs * 0.62, (colW * per) / (PT * 0.66 * nameLen))),
   };
