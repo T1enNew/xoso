@@ -74,7 +74,7 @@ export default function Slips({ data, provinces, skip, footer, getCode }) {
           <th className="lb">{THU_NGAN[weekday(data.date)]}<br />{d}/{mo}<br />{y}</th>
           {/* Đài nào chưa có mã vẫn chừa dòng mã để tên các đài thẳng hàng */}
           {list.map((p, i) => (
-            <th key={i} colSpan={per}>
+            <th key={i} colSpan={per} className={i ? 'sep' : undefined}>
               <div className="pn">{p.name || NAME[m]}</div>
               {hasCode && <div className="code">{codes[i] || ' '}</div>}
             </th>
@@ -86,7 +86,8 @@ export default function Slips({ data, provinces, skip, footer, getCode }) {
             {list.flatMap((p, pi) => Array.from({ length: per }, (_, s) => {
               const i = r * per + s;
               return (
-                <td key={pi * per + s} className={s ? 'v sub' : 'v'}>
+                // sep: cột đầu của mỗi đài từ đài thứ 2 trở đi, có đường dọc đậm ngăn cách đài
+                <td key={pi * per + s} className={s ? 'v sub' : pi ? 'v sep' : 'v'}>
                   {i < count && <Num v={(p.prizes[g] || [])[i]} len={len} />}
                 </td>
               );
