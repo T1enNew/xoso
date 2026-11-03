@@ -19,9 +19,9 @@ function textEm(text) {
   return measureCtx.measureText(text).width / 100;
 }
 function slipFonts(mien, rows, cols, codeLen, nameLen, per) {
-  const H = SLIP_H - 4 - 18 - 5;       // chiều cao còn cho các dòng số: trừ lề, tiêu đề + dòng cuối, khoảng hở các nhóm giải
+  const H = SLIP_H - 4 - 18 - 11;      // chiều cao còn cho các dòng số: trừ lề, tiêu đề + dòng cuối, khoảng hở trên/dưới các nhóm giải
   const W = SLIP_W - LABEL_COL;        // bề ngang cho các cột số: trừ cột trái
-  const colW = W / cols - 2;
+  const colW = W / cols - 3;            // chừa 1,5mm bên phải số và ít nhất 1mm bên trái cho số không sát đường dọc
   const fit = (mm, digits) => mm / (PT * 0.6 * digits); // chữ số Arial (đậm nhẹ) rộng ~0,58 cỡ chữ
   // rows + 0.9: dòng giải 8 và đặc biệt chữ to hơn nên chiếm thêm chỗ
   const fs = Math.min(H / PT / LH / (rows + 0.9), fit(colW, 5), 19);

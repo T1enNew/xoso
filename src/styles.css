@@ -121,11 +121,12 @@ body.a4 .sheet { height: 296mm; min-height: 0; padding: 12mm; overflow: hidden; 
 
 /* Phiếu: 6 phiếu giống nhau trên 1 tờ A4, 3 trên 3 dưới */
 /* Phiếu cao vừa nội dung (gọn như phiếu mẫu), xếp từ đầu trang: lề trên hở một chút (5mm, khung phiếu cách mép 7mm), giấy thừa để ở dưới.
-   Giữa 2 hàng phiếu chừa thêm 1mm (khung cách nhau 5mm). */
-body.phieu .sheet { height: 296mm; min-height: 0; padding: 5mm 4mm 4mm; display: grid; grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(2, auto); row-gap: 1mm; align-content: start; overflow: hidden; }
-/* Đường kẻ bên trong phiếu mảnh hơn khung ngoài (0,45mm) cho nhẹ mắt;
-   đường ngang ngăn các nhóm giải còn mảnh hơn nữa (0,1mm) */
-.slip { --slip-line: 0.2mm solid #000; --slip-hline: 0.1mm solid #000; padding: 2mm; overflow: hidden; min-width: 0; min-height: 0; }
+   Giữa 2 hàng phiếu chừa thêm 1mm (khung cách nhau 5mm). Hai bên: khung phiếu cách mép giấy 4,5mm,
+   giữa các cột phiếu cách nhau 5,5mm cho dễ cắt (phiếu giữ nguyên bề ngang). */
+body.phieu .sheet { height: 296mm; min-height: 0; padding: 5mm 2.5mm 4mm; display: grid; grid-template-columns: repeat(3, calc(202mm / 3)); justify-content: space-between; grid-template-rows: repeat(2, auto); row-gap: 1mm; align-content: start; overflow: hidden; }
+/* Đường kẻ bên trong phiếu mảnh hơn khung ngoài (0,45mm) cho nhẹ mắt (0,15mm);
+   đường ngang ngăn các nhóm giải còn mảnh hơn nữa (0,08mm); riêng khung ô số giải đặc biệt đậm (0,3mm) */
+.slip { --slip-line: 0.15mm solid #000; --slip-hline: 0.08mm solid #000; --slip-db-line: 0.3mm solid #000; padding: 2mm; overflow: hidden; min-width: 0; min-height: 0; }
 .slip table { width: 100%; border-collapse: collapse; table-layout: fixed; border: 0.45mm solid #000; font-family: Arial, Helvetica, sans-serif; font-size: var(--fs); color: #000; }
 .slip th, .slip td { border-left: var(--slip-line); padding: 0 0.5mm; line-height: 1.15; font-weight: normal; text-align: center; white-space: nowrap; overflow: hidden; }
 .slip th.lb, .slip td.lb, .slip td.sub, .slip td.ft { border-left: 0; }
@@ -138,8 +139,8 @@ body.phieu .sheet { height: 296mm; min-height: 0; padding: 5mm 4mm 4mm; display:
 .slip td.v { line-height: var(--lh); text-align: right; padding-right: 1.5mm; -webkit-text-stroke: 0.008em currentColor; }
 .slip.one td.v { text-align: center; padding-right: 0.5mm; } /* in 1 đài: số canh giữa */
 /* Chừa chút khoảng ở đầu và cuối mỗi nhóm giải để số không sát đường kẻ */
-.slip tr.top td.v { padding-top: 0.2mm; }
-.slip tr.end td.v { padding-bottom: 0.4mm; }
+.slip tr.top td.v { padding-top: 0.5mm; }
+.slip tr.end td.v { padding-bottom: 0.7mm; }
 .slip .pn { font-size: var(--fname); text-transform: uppercase; white-space: normal; line-height: 1.15; }
 .slip .code { font-size: var(--fcode); line-height: 1.1; margin-top: 0.5mm; letter-spacing: 0; }
 /* Tên đài, mã vé và cả cột trái (ngày, tiền thưởng) đậm hơn chữ thường một chút như phiếu thật */
@@ -150,9 +151,10 @@ body.phieu .sheet { height: 296mm; min-height: 0; padding: 5mm 4mm 4mm; display:
 .slip tr.db td.v { font-size: var(--fdb); font-weight: bold; -webkit-text-stroke: 0; }
 /* Ô giải đặc biệt: chừa khoảng trên dưới để số cách xa khung */
 .slip tr.db td, .slip tr.db td.v { padding-top: 1mm; padding-bottom: 1mm; }
+.slip tr.db td.v { border-top: var(--slip-db-line); border-left: var(--slip-db-line); }
 /* ĐB đã in đậm nên bỏ lớp tô đậm thêm, không thì chữ Đ nhỏ bị dính nét */
 .slip tr.db td.lb { font-size: 9pt; font-weight: bold; vertical-align: middle; padding-top: 0; -webkit-text-stroke: 0; }
-.slip td.ft { border-top: var(--slip-line); font-size: var(--ffoot); font-weight: bold; padding: 0.8mm 0.5mm; line-height: 1.15; }
+.slip td.ft { border-top: var(--slip-db-line); font-size: var(--ffoot); font-weight: bold; padding: 0.8mm 0.5mm; line-height: 1.15; }
 @media screen { .slip { outline: 1px dashed #d6d0c8; outline-offset: -0.5px; } }
 
 /* ---------- Màn hình nhỏ (chỉ trên màn hình, khi in không áp dụng) ---------- */
