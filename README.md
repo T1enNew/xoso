@@ -1,7 +1,7 @@
 # Xổ Số Trường Thịnh
 
 Web in kết quả xổ số kiến thiết Miền Nam cho đại lý Trường Thịnh: phiếu 6 tờ / A4 (3 trên, 3 dưới) hoặc bảng A4, in nhiều tờ một lượt.
-Trong giờ xổ, trang tự cập nhật số đang ra (số chưa ra thì xoay). Dùng được trên máy tính, iPad và điện thoại.
+Trong giờ xổ, trang tự cập nhật số đang ra: số đang quay cuộn màu đỏ, số chưa tới lượt có vòng tròn nhỏ xoay. Dùng được trên máy tính, iPad và điện thoại.
 
 ## Chạy
 
@@ -31,12 +31,12 @@ Kiểm tra phần đọc dữ liệu: `npm test`.
 
 ## Cấu trúc
 
-- `lib/kqxs.js`: lấy kết quả từ xskt.com.vn và ký hiệu vé (Miền Nam) từ minhngoc.net.vn, trả JSON cho `/api/kqxs?mien=mn|mt|mb&date=YYYY-MM-DD`.
+- `lib/kqxs.js`: lấy kết quả Miền Nam từ xskt.com.vn và ký hiệu vé từ minhngoc.net.vn, trả JSON cho `/api/kqxs?date=YYYY-MM-DD`.
   Hôm nay lấy từ RSS, lúc đang xổ lấy từ nguồn trực tiếp; ngày cũ lấy từ trang theo ngày, trang đó lỗi thì tìm trong trang theo thứ.
 - `server.js`: chạy ở máy (phục vụ trang và `/api/kqxs`). `api/kqxs.js`: chạy trên Vercel.
-- `src/`: giao diện React (Vite). Phiếu ở `src/components/Slips.jsx`, bảng ở `src/components/ResultTable.jsx`.
+- `src/`: giao diện React (Vite). Phiếu ở `src/components/Slips.jsx`, bảng ở `src/components/ResultTable.jsx`,
+  ô số chưa ra / đang quay ở `src/components/Spin.jsx`, các giải và tiền thưởng ở `src/lib/constants.js`.
 - `test/`: kiểm tra phần đọc dữ liệu, không cần mạng.
-- `legacy/index.html`: bản cũ viết bằng một file HTML.
 
 ## Lưu ý
 

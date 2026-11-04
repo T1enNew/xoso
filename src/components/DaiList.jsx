@@ -7,16 +7,13 @@ const DRAG_START_PX = 5; // chuột phải di chuyển chừng này mới tính 
 // Thứ tự trong danh sách là thứ tự in trên phiếu (từ trái sang).
 // Máy tính: kéo cả thanh. Điện thoại: kéo ở tay nắm ⠿ (chỗ khác vẫn vuốt cuộn trang được).
 export default function DaiList({ provinces, skip, onToggle, getCode, onCode, onReorder }) {
-  const named = provinces.filter(p => p.name);
   const rowRefs = useRef([]);
   const dragRef = useRef(null); // { idx, startY, rects, pointerId, active }
   const justDragged = useRef(false);
   const [drag, setDrag] = useState(null); // { idx, dy, to }
 
-  if (!named.length) {
-    return <div className="hint">{provinces.length ? 'Miền Bắc chỉ có một bảng kết quả.' : 'Không có đài nào.'}</div>;
-  }
-  const names = named.map(p => p.name);
+  if (!provinces.length) return <div className="hint">Không có đài nào.</div>;
+  const names = provinces.map(p => p.name);
 
   const commit = (from, to) => {
     if (from === to) return;
@@ -26,13 +23,13 @@ export default function DaiList({ provinces, skip, onToggle, getCode, onCode, on
   };
 
   const onPointerDown = (e, idx) => {
-    if (e.button !== 0 || named.length < 2) return;
+    if (e.button !== 0 || names.length < 2) return;
     const onGrip = !!e.target.closest('.grip');
     // Ô mã vé để gõ chữ; cảm ứng thì chỉ kéo ở tay nắm cho trang vẫn cuộn được
     if (e.target.closest('.code') || (e.pointerType !== 'mouse' && !onGrip)) return;
     dragRef.current = {
       idx, startY: e.clientY, pointerId: e.pointerId, el: e.currentTarget, active: false,
-      rects: rowRefs.current.slice(0, named.length).map(el => el.getBoundingClientRect()),
+      rects: rowRefs.current.slice(0, names.length).map(el => el.getBoundingClientRect()),
     };
     // Cảm ứng ở tay nắm: kéo luôn. Chuột: chờ di chuyển đủ xa mới kéo, để bấm ô tick vẫn ăn
     if (onGrip && e.pointerType !== 'mouse') startDrag(dragRef.current);
@@ -76,7 +73,7 @@ export default function DaiList({ provinces, skip, onToggle, getCode, onCode, on
   // Bàn phím: đứng ở tay nắm, bấm mũi tên lên/xuống để đổi chỗ
   const onGripKey = (e, idx) => {
     const to = e.key === 'ArrowUp' ? idx - 1 : e.key === 'ArrowDown' ? idx + 1 : -1;
-    if (to < 0 || to >= named.length) return;
+    if (to < 0 || to >= names.length) return;
     e.preventDefault();
     commit(idx, to);
   };
@@ -93,7 +90,7 @@ export default function DaiList({ provinces, skip, onToggle, getCode, onCode, on
 
   return (
     <div className={drag ? 'dai-list sorting' : 'dai-list'}>
-      {named.map((p, i) => {
+      {provinces.map((p, i) => {
         const off = skip.includes(p.name);
         const dy = shiftOf(i);
         const cls = ['dai', off && 'off', drag?.idx === i && 'dragging'].filter(Boolean).join(' ');

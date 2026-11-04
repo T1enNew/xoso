@@ -2,7 +2,7 @@
   "name": "xoso-print",
   "private": true,
   "version": "1.0.0",
-  "description": "In kết quả xổ số (phiếu 6 tờ / A4, bảng A4, bill 80mm)",
+  "description": "Xổ Số Trường Thịnh: in kết quả xổ số Miền Nam (phiếu 6 tờ / A4, bảng A4)",
   "scripts": {
     "dev": "node server.js --dev",
     "build": "vite build",

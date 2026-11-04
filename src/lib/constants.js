@@ -1,47 +1,28 @@
-export const DRAW_TIME = { mn: '16:15', mt: '17:15', mb: '18:15' };
-export const WATCH_FROM = { mn: '16:05', mt: '17:05', mb: '18:05' }; // từ giờ này dò nhanh (giờ VN)
-export const DRAW_END = { mn: '16:50', mt: '17:50', mb: '18:50' };   // sau giờ này dò thưa lại
+// Giờ xổ Miền Nam (giờ VN)
+export const DRAW_TIME = '16:15';
+export const WATCH_FROM = '16:05'; // từ giờ này dò nhanh
+export const DRAW_END = '16:50';   // sau giờ này dò thưa lại
 
-// Mỗi giải: [số lượng số, số chữ số] để vẽ ô số xoay cho giải chưa ra
-const SPEC_NAM_TRUNG = { '8': [1, 2], '7': [1, 3], '6': [3, 4], '5': [1, 4], '4': [7, 5], '3': [2, 5], '2': [1, 5], '1': [1, 5], 'ĐB': [1, 6] };
-export const SPEC = {
-  mn: SPEC_NAM_TRUNG,
-  mt: SPEC_NAM_TRUNG,
-  mb: { 'ĐB': [1, 5], '1': [1, 5], '2': [2, 5], '3': [6, 5], '4': [4, 4], '5': [6, 4], '6': [3, 3], '7': [4, 2] },
-};
-
-export const NAME = { mn: 'Miền Nam', mt: 'Miền Trung', mb: 'Miền Bắc' };
-
-export const ORDER = {
-  mn: ['8', '7', '6', '5', '4', '3', '2', '1', 'ĐB'],
-  mt: ['8', '7', '6', '5', '4', '3', '2', '1', 'ĐB'],
-  mb: ['ĐB', '1', '2', '3', '4', '5', '6', '7'],
-};
-
-// Tiền thưởng in ở cột trái của phiếu (vé 10.000đ)
-const LABEL_NAM_TRUNG = { '8': '100', '7': '200', '6': '400', '5': '1TR', '4': '3TR', '3': '10TR', '2': '15TR', '1': '30TR', 'ĐB': 'ĐB' };
-export const LABEL = {
-  mn: LABEL_NAM_TRUNG,
-  mt: LABEL_NAM_TRUNG,
-  mb: { 'ĐB': 'ĐB', '1': '10TR', '2': '5TR', '3': '1TR', '4': '400', '5': '200', '6': '100', '7': '40' },
-};
+// Các giải theo thứ tự xổ, cũng là thứ tự in từ trên xuống.
+// count: số lượng số, len: số chữ số, label: tiền thưởng in trên phiếu, prize: tiền thưởng ghi trên bảng (vé 10.000đ)
+export const PRIZES = [
+  { g: '8', count: 1, len: 2, label: '100', prize: '100.000' },
+  { g: '7', count: 1, len: 3, label: '200', prize: '200.000' },
+  { g: '6', count: 3, len: 4, label: '400', prize: '400.000' },
+  { g: '5', count: 1, len: 4, label: '1TR', prize: '1 triệu' },
+  { g: '4', count: 7, len: 5, label: '3TR', prize: '3 triệu' },
+  { g: '3', count: 2, len: 5, label: '10TR', prize: '10 triệu' },
+  { g: '2', count: 1, len: 5, label: '15TR', prize: '15 triệu' },
+  { g: '1', count: 1, len: 5, label: '30TR', prize: '30 triệu' },
+  { g: 'ĐB', count: 1, len: 6, label: 'ĐB', prize: '2 tỷ' },
+];
 
 export const THU = ['Chủ Nhật', 'Thứ Hai', 'Thứ Ba', 'Thứ Tư', 'Thứ Năm', 'Thứ Sáu', 'Thứ Bảy'];
 export const THU_NGAN = ['CN', 'T.2', 'T.3', 'T.4', 'T.5', 'T.6', 'T.7'];
+
 // Dòng cuối phiếu: tên đại lý : số điện thoại
 export const DEFAULT_SHOP_NAME = 'TRƯỜNG THỊNH';
 export const DEFAULT_SHOP_PHONE = '0918643803';
-
-// Tiền thưởng ghi trên bảng A4 (vé 10.000đ)
-const PRIZE_NAM_TRUNG = {
-  '8': '100.000', '7': '200.000', '6': '400.000', '5': '1 triệu', '4': '3 triệu',
-  '3': '10 triệu', '2': '15 triệu', '1': '30 triệu', 'ĐB': '2 tỷ',
-};
-export const PRIZE = {
-  mn: PRIZE_NAM_TRUNG,
-  mt: PRIZE_NAM_TRUNG,
-  mb: { 'ĐB': '1 tỷ', '1': '10 triệu', '2': '5 triệu', '3': '1 triệu', '4': '400.000', '5': '200.000', '6': '100.000', '7': '40.000' },
-};
 
 export const KHO_OPTIONS = [
   { value: 'phieu', label: 'Phiếu', sub: '6 phiếu / tờ A4' },
