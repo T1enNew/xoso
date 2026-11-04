@@ -98,7 +98,17 @@ button, input { font: inherit; color: inherit; }
 body.phieu .sheet-box, body.a4 .sheet-box { --sheet-h: 296mm; }
 .preview-note { display: none; }
 .empty { padding: 80px 20px; text-align: center; color: var(--muted); grid-column: 1 / -1; }
-.spin { color: #b3aca4 !important; font-variant-numeric: tabular-nums; }
+/* Ô số chưa ra. Chữ "0" trong suốt giữ đúng chỗ một chữ số để khi số ra không bị xô lệch.
+   Chờ tới lượt: mỗi chữ số là một chấm mờ đứng yên, nhìn êm mắt. */
+.ph, .reel { position: relative; color: transparent; }
+.ph::after { content: ''; position: absolute; left: 50%; top: 50%; width: 0.2em; height: 0.2em; margin: -0.1em 0 0 -0.1em; border-radius: 50%; background: #cdc6bd; }
+/* Số đang quay (mỗi đài một số): dải 0→9 màu đỏ cuộn lên trong khung cao một dòng, mờ dần ở mép trên dưới như vòng quay */
+.reel .win { position: absolute; left: 0; right: 0; top: 0; bottom: 0; overflow: hidden;
+  -webkit-mask-image: linear-gradient(transparent, #000 18%, #000 82%, transparent); mask-image: linear-gradient(transparent, #000 18%, #000 82%, transparent); }
+.reel .strip { position: absolute; left: 0; right: 0; top: 0; white-space: pre; line-height: normal; text-align: center; color: var(--red); animation: roll 0.9s linear infinite; }
+@keyframes roll { to { transform: translateY(-90.9091%); } } /* 10 trên 11 dòng: dòng cuối là số 0 trùng dòng đầu nên vòng lặp liền mạch */
+@media (prefers-reduced-motion: reduce) { .reel .strip { animation-duration: 6s !important; } }
+@media print { .ph::after, .reel .win { display: none; } } /* in giấy: ô chưa có số để trống */
 
 /* Bảng: một bảng kết quả vừa khít một tờ A4, cỡ số tính sẵn trong ResultTable.jsx */
 body.a4 .sheet { height: 296mm; min-height: 0; padding: 12mm; overflow: hidden; }

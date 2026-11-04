@@ -68,6 +68,8 @@ export default function App() {
   const complete = !!(data && data.date === date && data.result?.complete);
   // Đang xem hôm nay mà chưa đủ kết quả thì tự theo dõi: chưa tới giờ thì chờ, tới giờ thì dò liên tục
   const follow = date === today && !complete;
+  // Tới giờ xổ (hoặc nguồn đã có số) thì số đang tới lượt mới quay; trước giờ xổ các ô chỉ hiện chấm chờ
+  const live = follow && data?.date === today && (!!data.result || vnNow() >= DRAW_TIME[mien]);
 
   useEffect(() => {
     if (!follow) return;
@@ -182,8 +184,8 @@ export default function App() {
   let sheet;
   if (!data) sheet = <p className="empty">{status.kind === 'err' ? status.text : 'Đang tải…'}</p>;
   else if (!provinces) sheet = <p className="empty">Ngày {fmtDate(data.date)} ({THU[weekday(data.date)]}) không có kỳ quay {NAME[data.mien]}.</p>;
-  else if (kho === 'phieu') sheet = <Slips data={data} provinces={ordered} skip={skip} footer={footer} getCode={getCode} />;
-  else sheet = <ResultTable data={data} provinces={ordered} skip={skip} footer={footer} getCode={getCode} />;
+  else if (kho === 'phieu') sheet = <Slips data={data} provinces={ordered} skip={skip} footer={footer} getCode={getCode} live={live} />;
+  else sheet = <ResultTable data={data} provinces={ordered} skip={skip} footer={footer} getCode={getCode} live={live} />;
 
   return (
     <div className="app">

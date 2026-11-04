@@ -1,7 +1,7 @@
 import { LABEL, NAME, ORDER, SPEC, THU_NGAN } from '../lib/constants.js';
 import { formatPhones } from '../lib/phone.js';
 import { weekday } from '../lib/time.js';
-import { Num } from './Spin.jsx';
+import { Num, nextSlot } from './Spin.jsx';
 
 // Cỡ chữ (pt) cho phiếu: gọn như phiếu mẫu (không kéo dài hết nửa tờ A4), số to và sát dòng
 const PT = 0.3528; // 1pt = 0.3528mm
@@ -38,7 +38,7 @@ function slipFonts(mien, rows, cols, codeLen, nameLen, per) {
 }
 
 // 6 phiếu giống nhau trên 1 tờ A4, 3 trên 3 dưới. Các đài đã được xếp sẵn theo thứ tự người dùng chọn.
-export default function Slips({ data, provinces, skip, footer, getCode }) {
+export default function Slips({ data, provinces, skip, footer, getCode, live }) {
   const m = data.mien;
   const per = m === 'mb' ? 2 : 1; // miền Bắc chỉ 1 đài nên xếp 2 số mỗi dòng
   const list = provinces.filter(p => !p.name || !skip.includes(p.name));
@@ -49,6 +49,8 @@ export default function Slips({ data, provinces, skip, footer, getCode }) {
     const [count, len] = SPEC[m][g];
     return { g, count, len, n: Math.ceil(count / per) };
   });
+  // Đang xổ trực tiếp: mỗi đài chỉ quay số đang tới lượt, các số sau hiện chấm chờ
+  const cur = list.map(p => (live ? nextSlot(m, p.prizes, SPEC[m]) : null));
   const codes = list.map(p => (p.name ? getCode(p.name).trim().toUpperCase() : ''));
   const hasCode = codes.some(Boolean);
   const nameLen = Math.max(...list.map(p => (p.name || NAME[m]).length));
@@ -88,7 +90,7 @@ export default function Slips({ data, provinces, skip, footer, getCode }) {
               return (
                 // first: đài đầu (đường dọc cạnh cột tiền thưởng); sep: từ đài thứ 2, đường dọc đậm ngăn cách đài
                 <td key={pi * per + s} className={s ? 'v sub' : pi ? 'v sep' : 'v first'}>
-                  {i < count && <Num v={(p.prizes[g] || [])[i]} len={len} />}
+                  {i < count && <Num v={(p.prizes[g] || [])[i]} len={len} active={cur[pi] === `${g}:${i}`} />}
                 </td>
               );
             }))}

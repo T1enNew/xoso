@@ -1,7 +1,7 @@
 import { NAME, ORDER, PRIZE, SPEC, THU } from '../lib/constants.js';
 import { formatPhones } from '../lib/phone.js';
 import { weekday } from '../lib/time.js';
-import { Num } from './Spin.jsx';
+import { Num, nextSlot } from './Spin.jsx';
 
 // Cỡ chữ (pt) để cả bảng vừa khít một tờ A4
 const PT = 0.3528; // 1pt = 0.3528mm
@@ -18,10 +18,11 @@ function tableFonts(mien, nProv) {
 }
 
 // Một bảng kết quả vừa một tờ A4. Đài và thứ tự đài giống phiếu, mã vé in dưới tên đài.
-export default function ResultTable({ data, provinces: all, skip, footer, getCode }) {
+export default function ResultTable({ data, provinces: all, skip, footer, getCode, live }) {
   const m = data.mien;
   const provinces = all.filter(p => !p.name || !skip.includes(p.name));
   if (!provinces.length) return <p className="empty">Chưa chọn đài nào để in.</p>;
+  const cur = provinces.map(p => (live ? nextSlot(m, p.prizes, SPEC[m]) : null)); // số đang quay của mỗi đài
   const codes = provinces.map(p => (p.name ? getCode(p.name).trim().toUpperCase() : ''));
   const hasCode = codes.some(Boolean);
   const [y, mo, d] = data.date.split('-');
@@ -61,7 +62,7 @@ export default function ResultTable({ data, provinces: all, skip, footer, getCod
                 {provinces.map((p, pi) => (
                   <td key={pi}>
                     {Array.from({ length: count }, (_, i) => (
-                      <Num key={i} v={(p.prizes[g] || [])[i]} len={len} className="n" />
+                      <Num key={i} v={(p.prizes[g] || [])[i]} len={len} active={cur[pi] === `${g}:${i}`} className="n" />
                     ))}
                   </td>
                 ))}
