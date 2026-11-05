@@ -191,7 +191,7 @@ export default function App() {
 
         <section className="sec-date">
           <div className="lbl-row">
-            <p className="lbl">Ngày xổ · {THU[weekday(date)]}</p>
+            <p className="lbl">Ngày xổ <span className="day-pill">{THU[weekday(date)]}{date === today && ' · Hôm nay'}</span></p>
             {date !== today && <button className="link" onClick={() => changeDate(today)}>Về hôm nay</button>}
           </div>
           <div className="daterow">
