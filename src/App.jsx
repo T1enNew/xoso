@@ -129,7 +129,7 @@ export default function App() {
 
   const changeDate = iso => setDate(iso > today ? today : iso);
   const n = Math.min(MAX_COPIES, Math.max(1, parseInt(copies, 10) || 1));
-  const copiesText = kho === 'phieu' ? `${n} tờ A4 = ${n * 6} phiếu` : `${n} tờ A4`;
+  const copiesText = kho === 'phieu' ? `${n} tờ A4 = ${n * 6} vé dò` : `${n} tờ A4`;
   const print = () => window.print();
 
   // Ô số điện thoại: chỉ nhận chữ số, đủ số thì không cho gõ thêm, tự cách nhóm khi gõ
@@ -250,7 +250,7 @@ export default function App() {
       </aside>
 
       <main className="stage" ref={stageRef}>
-        <p className="preview-note">Xem trước 1 phiếu · khi in: 6 phiếu / tờ A4</p>
+        <p className="preview-note">Xem trước 1 vé dò · khi in: 6 vé / tờ A4</p>
         <div className="sheet-box"><div className="sheet">{sheet}</div></div>
         {printing && printed.length > 0 && Array.from({ length: n - 1 }, (_, i) => <div key={i} className="sheet">{sheet}</div>)}
       </main>
