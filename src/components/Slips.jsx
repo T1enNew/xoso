@@ -7,7 +7,7 @@ const PT = 0.3528;          // 1pt = 0.3528mm
 const LABEL_COL = 9;        // bề ngang cột trái: ngày ở dòng tiêu đề, tiền thưởng ở các dòng dưới
 const SLIP_W = 188 / 3;     // bề ngang khung phiếu ≈62,7mm: (210 - lề trái 5 - lề phải 6 - 2 khe 5,5) / 3, xem styles.css
 const SLIP_H = 130;         // chiều cao một phiếu (nửa tờ A4 là 144mm)
-const LH = 0.85;            // khoảng cách các dòng số so với cỡ chữ (đo theo phiếu mẫu)
+const LH = 0.85;            // khoảng cách các dòng số so với cỡ chữ ở phiếu 2 đài (đo theo phiếu mẫu)
 const ROWS = PRIZES.reduce((n, p) => n + p.count, 0);
 const DB_LEN = PRIZES.at(-1).len;
 
@@ -19,24 +19,41 @@ function textEm(text) {
   return ctx.measureText(text).width / 100;
 }
 
-function slipFonts(cols, codeLen, nameLen, footer) {
-  const H = SLIP_H - 4 - 18 - 11; // chiều cao cho các dòng số: trừ lề, tiêu đề + dòng cuối, khoảng hở các nhóm giải
-  const W = SLIP_W - LABEL_COL;   // bề ngang cho các cột số
-  const colW = W / cols - 3;      // chừa 1,5mm bên phải số và ít nhất 1mm bên trái cho số không sát đường dọc
-  const fit = (mm, digits) => mm / (PT * 0.6 * digits); // chữ số Arial rộng ~0,58 cỡ chữ
+const ROWS_H = SLIP_H - 4 - 18 - 11; // chiều cao cho các dòng số: trừ lề, tiêu đề + dòng cuối, khoảng hở các nhóm giải
+const NUM_W = SLIP_W - LABEL_COL;    // bề ngang cho các cột số
+const fit = (mm, digits) => mm / (PT * 0.6 * digits); // cỡ chữ (pt) để số vừa mm bề ngang; chữ số Arial rộng ~0,58 cỡ chữ
+
+// Cỡ các con số: to nhất vừa chiều cao phiếu, nhưng không tràn bề ngang cột (nhiều đài thì cột hẹp, số phải nhỏ lại)
+function numberFonts(cols) {
+  const colW = NUM_W / cols - 3; // chừa 1,5mm bên phải số và ít nhất 1mm bên trái cho số không sát đường dọc
   // ROWS + 0.9: dòng giải 8 và đặc biệt chữ to hơn nên chiếm thêm chỗ
-  const fs = Math.min(H / PT / LH / (ROWS + 0.9), fit(colW, 5), 19);
+  const fs = Math.min(ROWS_H / PT / LH / (ROWS + 0.9), fit(colW, 5), 19);
   return {
+    colW,
     fs,
     f8: Math.min(fs * 1.5, fit(colW, 3)),
     // Đặc biệt: chừa ~4mm bề ngang quanh số để số cách xa khung (chữ số đậm rộng ~0,565 cỡ chữ)
-    fdb: Math.min(fs * 1.3, (W / cols - 4) / (PT * 0.565 * DB_LEN)),
-    // Mã vé có chữ in hoa (rộng hơn chữ số) nên thu nhỏ riêng cho vừa cột, tối đa 0,88 cỡ các con số
-    fcode: Math.min(fs * 0.88, colW / (PT * 0.7 * Math.max(codeLen, 1))),
-    // Tên đài cao ~0,62 các con số; tên dài thì thu nhỏ cho vừa một dòng, nhỏ nhất 7pt (chật quá thì xuống dòng)
-    fname: Math.max(7, Math.min(fs * 0.62, colW / (PT * 0.66 * nameLen))),
-    // Dòng cuối dài khoảng 90% bề ngang phiếu, to nhất 13pt
-    ffoot: footer ? Math.min(13, (SLIP_W * 0.9) / PT / textEm(footer)) : 8,
+    fdb: Math.min(fs * 1.3, (NUM_W / cols - 4) / (PT * 0.565 * DB_LEN)),
+  };
+}
+// Chiều cao các dòng số tính theo cỡ chữ: các dòng cỡ thường + dòng giải 8 + dòng đặc biệt
+const rowsPt = n => (ROWS - 2) * n.fs + n.f8 + n.fdb;
+// Mọi phiếu cao bằng phiếu 2 đài: phiếu nhiều đài số phải nhỏ cho vừa bề ngang thì giãn khoảng cách các dòng ra
+const ROWS_PT = rowsPt(numberFonts(2)) * LH;
+
+function slipFonts(cols, codeLen, nameLen, footer) {
+  const { colW, ...n } = numberFonts(cols);
+  return {
+    lh: ROWS_PT / rowsPt(n),
+    pt: {
+      ...n,
+      // Mã vé có chữ in hoa (rộng hơn chữ số) nên thu nhỏ riêng cho vừa cột, tối đa 0,88 cỡ các con số
+      fcode: Math.min(n.fs * 0.88, colW / (PT * 0.7 * Math.max(codeLen, 1))),
+      // Tên đài cao ~0,62 các con số; tên dài thì thu nhỏ cho vừa một dòng, nhỏ nhất 7pt (chật quá thì xuống dòng)
+      fname: Math.max(7, Math.min(n.fs * 0.62, colW / (PT * 0.66 * nameLen))),
+      // Dòng cuối dài khoảng 90% bề ngang phiếu, to nhất 13pt
+      ffoot: footer ? Math.min(13, (SLIP_W * 0.9) / PT / textEm(footer)) : 8,
+    },
   };
 }
 
@@ -50,8 +67,8 @@ export default function Slips({ date, provinces, footer, getCode, live }) {
   const hasCode = codes.some(Boolean);
   const cur = provinces.map(p => live && nextSlot(p.prizes)); // đang xổ: mỗi đài chỉ quay số đang tới lượt
   const f = slipFonts(provinces.length, Math.max(...codes.map(c => c.length)), Math.max(...provinces.map(p => p.name.length)), footer);
-  const style = { '--lh': LH };
-  for (const [k, v] of Object.entries(f)) style[`--${k}`] = `${v.toFixed(1)}pt`;
+  const style = { '--lh': f.lh.toFixed(3) };
+  for (const [k, v] of Object.entries(f.pt)) style[`--${k}`] = `${v.toFixed(1)}pt`;
   const [y, m, d] = date.split('-');
 
   const slip = (
