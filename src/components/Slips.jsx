@@ -5,7 +5,7 @@ import { Num, nextSlot } from './Spin.jsx';
 // Phiếu gọn như phiếu mẫu (không kéo dài hết nửa tờ A4), số to và sát dòng. Kích thước tính bằng mm, cỡ chữ bằng pt.
 const PT = 0.3528;          // 1pt = 0.3528mm
 const LABEL_COL = 9;        // bề ngang cột trái: ngày ở dòng tiêu đề, tiền thưởng ở các dòng dưới
-const SLIP_W = 63;          // bề ngang khung phiếu (cột 67mm trong styles.css trừ 2mm hở mỗi bên)
+const SLIP_W = 188 / 3;     // bề ngang khung phiếu ≈62,7mm: (210 - lề trái 5 - lề phải 6 - 2 khe 5,5) / 3, xem styles.css
 const SLIP_H = 130;         // chiều cao một phiếu (nửa tờ A4 là 144mm)
 const LH = 0.85;            // khoảng cách các dòng số so với cỡ chữ (đo theo phiếu mẫu)
 const ROWS = PRIZES.reduce((n, p) => n + p.count, 0);
