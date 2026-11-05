@@ -19,7 +19,7 @@ npm run build
 npm start
 ```
 
-Sửa `server.js` hay `lib/kqxs.js` xong thì phải tắt (Ctrl+C) và chạy lại server.
+Sửa `server.js` hay các file trong `lib/` xong thì phải tắt (Ctrl+C) và chạy lại server.
 
 Kiểm tra phần đọc dữ liệu: `npm test`.
 
@@ -31,8 +31,12 @@ Kiểm tra phần đọc dữ liệu: `npm test`.
 
 ## Cấu trúc
 
-- `lib/kqxs.js`: lấy kết quả Miền Nam từ xskt.com.vn và ký hiệu vé từ minhngoc.net.vn, trả JSON cho `/api/kqxs?date=YYYY-MM-DD`.
-  Hôm nay lấy từ RSS, lúc đang xổ lấy từ nguồn trực tiếp; ngày cũ lấy từ trang theo ngày, trang đó lỗi thì tìm trong trang theo thứ.
+- `lib/kqxs.js`: trả JSON cho `/api/kqxs?date=YYYY-MM-DD` (kết quả Miền Nam, ký hiệu vé, lịch đài khi chưa xổ).
+  Hỏi Minh Ngọc trước; Minh Ngọc lỗi, hoặc tới giờ xổ mà chưa có số, thì hỏi xskt.
+- `lib/minhngoc.js`: nguồn chính minhngoc.net.vn. Ngày đã xổ đọc trang kết quả theo ngày (mỗi trang có 7 kỳ);
+  lúc đang xổ đọc file trực tiếp `js_m1.js`, và bảng trực tiếp (POST `action=xn`) để biết mã số đài là đài nào.
+- `lib/xskt.js`: nguồn dự phòng xskt.com.vn (RSS, nguồn trực tiếp, trang theo ngày / theo thứ).
+- `lib/common.js`: tên đài, các giải, giờ Việt Nam, gọi nguồn (tôn trọng lệnh chặn 429, gom các lần gọi trùng).
 - `server.js`: chạy ở máy (phục vụ trang và `/api/kqxs`). `api/kqxs.js`: chạy trên Vercel.
 - `src/`: giao diện React (Vite). Phiếu ở `src/components/Slips.jsx`, bảng ở `src/components/ResultTable.jsx`,
   ô số chưa ra / đang quay ở `src/components/Spin.jsx`, các giải và tiền thưởng ở `src/lib/constants.js`.

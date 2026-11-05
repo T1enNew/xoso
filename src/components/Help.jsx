@@ -21,8 +21,9 @@ const ITEMS = [
   {
     title: 'Kết quả tự cập nhật',
     icon: <><path d="M21 12a9 9 0 1 1-2.64-6.36L21 8" /><path d="M21 3v5h-5" /></>,
-    body: <p>Các con số lấy tự động từ xskt.com.vn, mã vé lấy từ Minh Ngọc. Tới giờ xổ ({DRAW_TIME} – {DRAW_END}) trang tự dò số mới
-      mỗi 10 giây, không cần bấm gì. Số đang quay cuộn <b className="red">màu đỏ</b>, số chưa tới lượt có vòng tròn nhỏ xoay.</p>,
+    body: <p>Các con số và mã vé lấy tự động từ Minh Ngọc (minhngoc.net.vn); Minh Ngọc lỗi thì tự lấy từ xskt.com.vn.
+      Tới giờ xổ ({DRAW_TIME} – {DRAW_END}) trang tự dò số mới mỗi 10 giây, không cần bấm gì.
+      Số đang quay cuộn <b className="red">màu đỏ</b>, số chưa tới lượt có vòng tròn nhỏ xoay.</p>,
   },
   {
     title: 'Chấm màu trạng thái',
