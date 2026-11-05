@@ -182,7 +182,7 @@ export default function App() {
       <aside className="panel">
         <header className="brand">
           <div className="logo" aria-hidden="true">TT</div>
-          <div>
+          <div className="brand-text">
             <h1>Xổ Số Trường Thịnh</h1>
             <Clock prefix="Miền Nam" />
           </div>

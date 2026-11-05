@@ -7,8 +7,8 @@ const now = () => {
   return { day: `${THU[weekday(todayISO())]}, ${p.day}/${p.month}/${p.year}`, time: `${p.hour}:${p.minute}:${p.second}` };
 };
 
-// Ngày và giờ Việt Nam dưới tên đại lý, vd "Miền Nam · Thứ Năm, 05/11/2026" và "🕒 08:36:45".
-// Hai phần không bao giờ bị cắt giữa chừng: chật thì giờ xuống dòng riêng.
+// Ngày và giờ Việt Nam dưới tên đại lý, vd "Miền Nam · Thứ Năm, 05/11/2026 🕒 08:36:45".
+// Mỗi phần liền một khối, chật thì cả phần xuống dòng (không cắt giữa chữ).
 export default function Clock({ prefix }) {
   const [t, setT] = useState(now);
   useEffect(() => {
@@ -17,7 +17,8 @@ export default function Clock({ prefix }) {
   }, []);
   return (
     <div className="clock">
-      <span>{prefix ? `${prefix} · ${t.day}` : t.day}</span>
+      {prefix && <span>{prefix}</span>}
+      <span className="clock-day">{t.day}</span>
       <span className="clock-time">
         <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" aria-hidden="true">
           <circle cx="12" cy="12" r="9.5" /><path d="M12 7v5l3 2" />

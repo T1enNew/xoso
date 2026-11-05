@@ -14,7 +14,8 @@ button, input { font: inherit; color: inherit; }
 .brand { display: flex; gap: 12px; align-items: center; position: relative; }
 
 /* Nút "?" nhỏ ở góc đầu trang; bấm vào mới hiện cửa sổ hướng dẫn giữa màn hình */
-.help { position: absolute; top: -3px; right: 0; } /* nằm góc trên, ngang dòng tên, để dòng ngày giờ bên dưới có đủ chỗ */
+.brand-text { flex: 1; min-width: 0; }
+.help { flex: none; align-self: flex-start; } /* chỗ riêng bên phải: chữ không chạy vào dưới nút */
 .help-btn { width: 28px; height: 28px; padding: 0; border: 1px solid var(--line); border-radius: 50%; background: #fff; color: var(--muted); font-weight: 700; font-size: 14px; line-height: 1; cursor: pointer; }
 .help-btn:hover, .help-btn[aria-expanded="true"] { color: var(--red); border-color: var(--red); }
 .help-backdrop { position: fixed; top: 0; right: 0; bottom: 0; left: 0; z-index: 100; display: grid; place-items: center; padding: 16px; background: rgba(29,27,25,.5); animation: help-fade .15s ease-out; }
@@ -53,9 +54,11 @@ button, input { font: inherit; color: inherit; }
 @media print { .help-backdrop { display: none; } }
 .logo { width: 44px; height: 44px; border-radius: 12px; background: var(--red); color: #fff; font-weight: 800; font-size: 17px; display: grid; place-items: center; flex: none; }
 .brand h1 { font-size: 17px; margin: 0; line-height: 1.2; }
-/* Ngày và giờ: mỗi phần liền một khối, chật thì giờ xuống dòng riêng (không cắt giữa ngày) */
-.clock { display: flex; flex-wrap: wrap; align-items: center; column-gap: 10px; color: var(--muted); font-size: 13px; line-height: 1.45; font-variant-numeric: tabular-nums; }
-.clock > span { white-space: nowrap; }
+/* Ngày và giờ: mỗi phần liền một khối, chật thì cả phần xuống dòng (không cắt giữa chữ).
+   Dấu "·" giữa "Miền Nam" và ngày nằm trong khoảng hở; phần nào bị đẩy xuống đầu dòng thì dấu đó lọt ra ngoài và bị che. */
+.clock { display: flex; flex-wrap: wrap; align-items: center; column-gap: 12px; overflow: hidden; color: var(--muted); font-size: 13px; line-height: 1.45; font-variant-numeric: tabular-nums; }
+.clock > span { position: relative; white-space: nowrap; }
+.clock-day::before { content: '·'; position: absolute; left: -8px; }
 .clock-time { display: inline-flex; align-items: center; gap: 4px; }
 .clock-time svg { flex: none; }
 .lbl { font-size: 11.5px; font-weight: 700; text-transform: uppercase; letter-spacing: .07em; color: var(--muted); margin: 0 0 8px; }
@@ -249,7 +252,7 @@ body.phieu .sheet { padding: 5mm 4mm 4mm 3mm; display: grid; grid-template-colum
     background: var(--panel); border-bottom: 1px solid var(--line);
   }
   .logo { width: 38px; height: 38px; border-radius: 10px; font-size: 15px; }
-  .help { position: static; margin-left: auto; align-self: center; }
+  .help { align-self: center; }
   .help-btn { width: 32px; height: 32px; font-size: 15px; }
   .brand h1 { font-size: 16px; }
   .sec-date { grid-area: date; }
