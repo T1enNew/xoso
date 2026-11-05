@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { flushSync } from 'react-dom';
 import Clock from './components/Clock.jsx';
 import DaiList from './components/DaiList.jsx';
+import Help from './components/Help.jsx';
 import ResultTable from './components/ResultTable.jsx';
 import Segmented from './components/Segmented.jsx';
 import Slips from './components/Slips.jsx';
@@ -185,6 +186,7 @@ export default function App() {
             <h1>Xổ Số Trường Thịnh</h1>
             <Clock prefix="Miền Nam" />
           </div>
+          <Help />
         </header>
 
         <section className="sec-date">
