@@ -28,23 +28,28 @@ function numberFonts(cols) {
   const colW = NUM_W / cols - 3; // chừa 1,5mm bên phải số và ít nhất 1mm bên trái cho số không sát đường dọc
   // ROWS + 0.9: dòng giải 8 và đặc biệt chữ to hơn nên chiếm thêm chỗ
   const fs = Math.min(ROWS_H / PT / LH / (ROWS + 0.9), fit(colW, 5), 19);
+  // Đặc biệt: chừa ~4mm bề ngang quanh số để số cách xa khung (chữ số đậm rộng ~0,565 cỡ chữ)
+  const fdb = Math.min(fs * 1.3, (NUM_W / cols - 4) / (PT * 0.565 * DB_LEN));
   return {
     colW,
     fs,
     f8: Math.min(fs * 1.5, fit(colW, 3)),
-    // Đặc biệt: chừa ~4mm bề ngang quanh số để số cách xa khung (chữ số đậm rộng ~0,565 cỡ chữ)
-    fdb: Math.min(fs * 1.3, (NUM_W / cols - 4) / (PT * 0.565 * DB_LEN)),
+    fdb,
+    // Cột hẹp (3–4 đài) làm số đặc biệt nhỏ hơn cả các số khác: kéo cao chữ lên cho nổi bật,
+    // trông to ~1,25 lần các số khác (tối đa kéo 1,6 lần). Phiếu 1–2 đài số đặc biệt vốn đã to hơn nên giữ nguyên.
+    dbsy: fdb < fs ? Math.min(1.6, (fs * 1.25) / fdb) : 1,
   };
 }
-// Chiều cao các dòng số tính theo cỡ chữ: các dòng cỡ thường + dòng giải 8 + dòng đặc biệt
-const rowsPt = n => (ROWS - 2) * n.fs + n.f8 + n.fdb;
+// Chiều cao các dòng số tính theo cỡ chữ: các dòng cỡ thường + dòng giải 8 + dòng đặc biệt (kể cả phần kéo cao)
+const rowsPt = n => (ROWS - 2) * n.fs + n.f8 + n.fdb * n.dbsy;
 // Mọi phiếu cao bằng phiếu 2 đài: phiếu nhiều đài số phải nhỏ cho vừa bề ngang thì giãn khoảng cách các dòng ra
 const ROWS_PT = rowsPt(numberFonts(2)) * LH;
 
 function slipFonts(cols, codeLen, nameLen, footer) {
-  const { colW, ...n } = numberFonts(cols);
+  const { colW, dbsy, ...n } = numberFonts(cols);
   return {
-    lh: ROWS_PT / rowsPt(n),
+    lh: ROWS_PT / rowsPt({ ...n, dbsy }),
+    dbsy,
     pt: {
       ...n,
       // Mã vé có chữ in hoa (rộng hơn chữ số) nên thu nhỏ riêng cho vừa cột, tối đa 0,88 cỡ các con số
@@ -67,7 +72,7 @@ export default function Slips({ date, provinces, footer, getCode, live }) {
   const hasCode = codes.some(Boolean);
   const cur = provinces.map(p => live && nextSlot(p.prizes)); // đang xổ: mỗi đài chỉ quay số đang tới lượt
   const f = slipFonts(provinces.length, Math.max(...codes.map(c => c.length)), Math.max(...provinces.map(p => p.name.length)), footer);
-  const style = { '--lh': f.lh.toFixed(3) };
+  const style = { '--lh': f.lh.toFixed(3), '--dbsy': f.dbsy.toFixed(3) };
   for (const [k, v] of Object.entries(f.pt)) style[`--${k}`] = `${v.toFixed(1)}pt`;
   const [y, m, d] = date.split('-');
 
@@ -93,7 +98,7 @@ export default function Slips({ date, provinces, footer, getCode, live }) {
             {r === 0 && <td className="lb" rowSpan={count}>{label}</td>}
             {provinces.map((p, i) => (
               <td key={p.name} className={`v ${edge(i)}`}>
-                <Num v={p.prizes[g]?.[r]} len={len} active={cur[i] === `${g}:${r}`} />
+                <Num v={p.prizes[g]?.[r]} len={len} active={cur[i] === `${g}:${r}`} className={g === 'ĐB' ? 'dbn' : ''} />
               </td>
             ))}
           </tr>
@@ -103,7 +108,7 @@ export default function Slips({ date, provinces, footer, getCode, live }) {
     </table>
   );
 
-  // In 1 đài thì cột số rất rộng, canh giữa cho cân; từ 2 đài thì canh phải như phiếu mẫu
-  const cls = provinces.length === 1 ? 'slip one' : 'slip';
+  // In 1 đài thì cột số rất rộng, canh giữa cho cân; từ 2 đài thì canh phải như phiếu mẫu. tall-db: số đặc biệt được kéo cao.
+  const cls = ['slip', provinces.length === 1 && 'one', f.dbsy > 1 && 'tall-db'].filter(Boolean).join(' ');
   return Array.from({ length: 6 }, (_, i) => <div key={i} className={cls} style={style}>{slip}</div>);
 }

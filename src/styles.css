@@ -213,6 +213,9 @@ body.phieu .sheet { padding: 5mm 4mm 4mm 3mm; display: grid; grid-template-colum
 /* Ô giải đặc biệt: chừa khoảng trên dưới để số cách xa khung */
 .slip tr.db td, .slip tr.db td.v { padding-top: 1mm; padding-bottom: 1mm; }
 .slip tr.db td.v { border-top: var(--slip-db-line); border-left: var(--slip-db-line); }
+/* Phiếu 3–4 đài: cột hẹp nên số đặc biệt kéo cao chữ lên (--dbsy lần) cho nổi bật; dòng cao theo cho chữ không đè khung.
+   Chỉ kéo số đã ra đủ, vòng xoay / số đang quay giữ nguyên hình. */
+.slip.tall-db .dbn:not(.waiting):not(.rolling) { display: inline-block; vertical-align: top; line-height: calc(var(--lh) * var(--dbsy)); transform: scaleY(var(--dbsy)); }
 /* Đường dọc cạnh cột tiền thưởng 0,2mm (ở hàng đặc biệt là khung ô 0,3mm);
    đường dọc ngăn giữa các đài đậm 0,4mm (cả ở hàng đặc biệt) để phân biệt rõ từng đài */
 .slip th.first, .slip td.first { border-left: var(--slip-first-line); }
