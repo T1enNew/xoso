@@ -35,7 +35,7 @@ export default function Help() {
             <li><b>Chấm màu trạng thái.</b> Đỏ nhấp nháy là đang xổ, xanh lá là đã đủ kết quả,
               xanh dương là đang chờ, cam là nguồn lỗi (trang tự thử lại).</li>
             <li><b>Ngày xổ.</b> Bấm ‹ › hoặc chọn trên lịch để xem và in kết quả ngày cũ.</li>
-            <li><b>Kiểu in.</b> Vé dò: 6 vé nhỏ trên 1 tờ A4, cắt ra phát cho khách. Bảng kết quả: 1 bảng lớn trên 1 tờ A4.</li>
+            <li><b>Kiểu in.</b> Vé dò nhỏ: 6 vé trên 1 tờ A4, cắt ra phát cho khách. Vé dò lớn: 1 vé to trên cả tờ A4.</li>
             <li><b>Đài in &amp; mã vé.</b> Bỏ tick đài không cần in. Kéo thanh đài lên xuống để đổi thứ tự trên vé
               (điện thoại: kéo ở chỗ ⠿). Mã vé tự lấy từ Minh Ngọc, sửa được; xoá trống thì quay về mã tự lấy.</li>
             <li><b>Dòng cuối.</b> Tên đại lý và số điện thoại in ở dưới mỗi vé.</li>

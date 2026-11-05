@@ -25,6 +25,6 @@ export const DEFAULT_SHOP_NAME = 'TRƯỜNG THỊNH';
 export const DEFAULT_SHOP_PHONE = '0918643803';
 
 export const KHO_OPTIONS = [
-  { value: 'phieu', label: 'Vé dò', sub: '6 vé nhỏ / tờ A4' },
-  { value: 'a4', label: 'Bảng kết quả', sub: '1 bảng lớn / tờ A4' },
+  { value: 'phieu', label: 'Vé dò nhỏ', sub: '6 vé / tờ A4' },
+  { value: 'a4', label: 'Vé dò lớn', sub: '1 vé / tờ A4' },
 ];
